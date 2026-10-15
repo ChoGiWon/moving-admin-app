@@ -157,6 +157,15 @@ def save_estimate(data):
         json.dump(clean_estimates, f, ensure_ascii=False, indent=4)
 
 
+@app.after_request
+def add_header(response):
+    # 브라우저 및 모바일이 HTML/정적 파일을 캐시하지 못하도록 원천 차단
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -353,7 +362,7 @@ def admin_delete(est_id):
 
     data = request.get_json() or {}
     password = data.get("delete_password")
-    
+
     if password != ADMIN_PASSWORD:
         return jsonify({"success": False, "message": "비밀번호가 올바르지 않습니다."})
 
@@ -374,16 +383,16 @@ def admin_delete(est_id):
 
 
 if __name__ == "__main__":
-     if not os.path.exists(DATA_FILE):
+    if not os.path.exists(DATA_FILE):
         from generate_data import generate_lunar_nohand_days
 
         generate_lunar_nohand_days()
 
-     app.run(
+    app.run(
         host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem")
-     )  # 서버에 설정된 인증서 파일명에 맞게 조정 필요
+    )  # 서버에 설정된 인증서 파일명에 맞게 조정 필요
 
-    #if os.path.exists("cert.pem") and os.path.exists("key.pem"):
-    #    app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
-    #else:
-    #    app.run(host="127.0.0.1", port=5000, debug=True)
+# if os.path.exists("cert.pem") and os.path.exists("key.pem"):
+#    app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
+# else:
+#    app.run(host="127.0.0.1", port=5000, debug=True)
