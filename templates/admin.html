@@ -318,13 +318,13 @@
                     </button>
                 </form>
 
-                <!-- 관리자 비밀번호 확인 삭제 영역 -->
-                <div style="display: flex; gap: 8px; margin-top: 8px; align-items: center;"
+                <!-- 관리자 비밀번호 확인 삭제 영역 (세로 배치 및 버튼 풀사이즈 정렬로 수정) -->
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;"
                     id="delete-box-{{ est.id }}">
                     <input type="password" id="delete_password_{{ est.id }}" placeholder="관리자 비밀번호 입력" required
-                        style="padding: 9px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 4px; flex: 1; box-sizing: border-box;">
+                        style="padding: 10px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 4px; width: 100%; box-sizing: border-box;">
                     <button type="button" onclick="deleteEstimate({{ est.id }})"
-                        style="background: #dc3545; color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; white-space: nowrap;">
+                        style="background: #dc3545; color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; width: 100%; box-sizing: border-box;">
                         🗑️ 내역 삭제
                     </button>
                 </div>
