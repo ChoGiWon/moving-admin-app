@@ -53,6 +53,7 @@ except Exception as e:
 
 
 def send_fcm_push(title, body):
+    print("👉 send_fcm_push 함수 진입 완료")
     if not os.path.exists("admin_tokens.txt"):
         print("토큰 파일이 존재하지 않습니다.")
         return
@@ -68,6 +69,8 @@ def send_fcm_push(title, body):
     if not tokens:
         print("등록된 관리자 토큰이 없습니다.")
         return
+
+    print(f"📌 현재 등록된 토큰 개수: {len(tokens)}개")
 
     valid_tokens = []
     tokens_changed = False
