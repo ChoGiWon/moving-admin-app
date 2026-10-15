@@ -1,0 +1,16 @@
+{
+  "name": "청년이사 프라임 익스프레스 관리자",
+  "short_name": "프라임관리자",
+  "start_url": "/admin",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#007bff",
+  "icons": [
+    {
+      "src": "/static/logo-main.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

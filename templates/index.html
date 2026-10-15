@@ -1,0 +1,755 @@
+{% extends "base.html" %}
+{% block title %}청년이사 프라임 익스프레스 - 홈{% endblock %}
+
+{% block content %}
+<!-- 5. 회사 소개 (10장 사진 2초 간격 순차 전환 및 고정 텍스트 오버레이) -->
+<section class="section company-intro">
+    <style>
+        .company-intro-banner {
+            position: relative;
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            padding: 50px 40px;
+            min-height: 350px;
+            display: flex;
+            align-items: flex-start;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .intro-slider-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .intro-slider-bg img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .intro-slider-bg img.active {
+            opacity: 0.75;
+        }
+
+        .intro-text-content {
+            position: relative;
+            z-index: 2;
+            color: #fff;
+            max-width: 650px;
+        }
+
+        .intro-text-content h2 {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 15px;
+            line-height: 1.3;
+            font-weight: bold;
+        }
+
+        .intro-text-content h2 span {
+            color: #ff9800;
+        }
+
+        .intro-features {
+            font-size: 1.05rem;
+            color: #f7fafc;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .intro-desc {
+            font-size: 1rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .company-intro-banner {
+                padding: 30px 20px;
+                min-height: 280px;
+            }
+
+            .intro-text-content h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+
+    <div class="company-intro-banner">
+        <div class="intro-slider-bg" id="introSliderBg">
+            <img src="{{ url_for('static', filename='Moving_photos_01.png') }}" class="active" alt="Moving_Photos_1">
+            <img src="{{ url_for('static', filename='Moving_photos_02.png') }}" alt="Moving_Photos_2">
+            <img src="{{ url_for('static', filename='Moving_photos_03.png') }}" alt="Moving_Photos_3">
+            <img src="{{ url_for('static', filename='Moving_photos_04.png') }}" alt="Moving_Photos_4">
+            <img src="{{ url_for('static', filename='Moving_photos_05.png') }}" alt="Moving_Photos_5">
+            <img src="{{ url_for('static', filename='Moving_photos_06.png') }}" alt="Moving_Photos_6">
+            <img src="{{ url_for('static', filename='Moving_photos_07.png') }}" alt="Moving_Photos_7">
+            <img src="{{ url_for('static', filename='Moving_photos_08.png') }}" alt="Moving_Photos_8">
+            <img src="{{ url_for('static', filename='Moving_photos_09.png') }}" alt="Moving_Photos_9">
+            <img src="{{ url_for('static', filename='Moving_photos_10.png') }}" alt="Moving_Photos_10">
+        </div>
+
+        <div class="intro-text-content">
+            <h2><span>안전한 이사 </span><br>약속드립니다.</h2>
+            <p class="intro-features">베테랑 전문팀 방문 · 보험 가입 · <br>친절 맞춤 서비스</p>
+            <p class="intro-desc">365일 연중무휴 고객님의 소중한 짐을 내 집처럼 안전하게 운송해 드립니다.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('#introSliderBg img');
+            if (slides.length > 0) {
+                let currentIndex = 0;
+                setInterval(() => {
+                    slides[currentIndex].classList.remove('active');
+                    currentIndex = (currentIndex + 1) % slides.length;
+                    slides[currentIndex].classList.add('active');
+                }, 2000);
+            }
+        });
+    </script>
+</section>
+
+<!-- 6. 견적 요청 최소 신청 접수 항목 (보관이사 포함) -->
+<section id="estimate-section" class="section estimate-quick">
+    <h3 class="section-title">견적 요청</h3>
+    <form action="/estimate" method="POST" class="estimate-form" onsubmit="handleEstimateSubmit(this)">
+        <div class="form-group">
+            <label for="userName">이름 <span class="required">*</span></label>
+            <input type="text" id="userName" name="userName" placeholder="이름을 입력하세요" required>
+        </div>
+
+        <div class="form-group">
+            <label for="userPhone">연락처 <span class="required">*</span></label>
+            <input type="tel" id="userPhone" name="userPhone" placeholder="010-0000-0000" required>
+        </div>
+
+        <div class="form-group">
+            <label for="userAddress">주소 (출발지 / 도착지) <span class="required">*</span></label>
+            <input type="text" id="userAddress" name="userAddress" placeholder="예: 천안시 동남구 / 아산시 배방읍" required>
+        </div>
+
+        <div class="form-group checkbox-group storage-check-wrap">
+            <label class="checkbox-label">
+                <input type="checkbox" id="isStorageMove" name="isStorageMove" onchange="toggleStorageDate()">
+                <span>보관이사 진행 (짐 보관 후 재입주)</span>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label id="dateLabel1" for="moveDate1">원하는 이사 날짜 <span class="required">*</span></label>
+            <input type="date" id="moveDate1" name="moveDate1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="visitDate">관리자 방문 견적 희망일 (선택)</label>
+            <input type="date" id="visitDate" name="visitDate">
+            <small class="helper-text" style="color: #666; font-size: 0.8rem; margin-top: 3px;">방문 견적이 필요한 경우에만
+                선택해주세요.</small>
+        </div>
+
+        <div class="form-group" id="storageDateWrap" style="display: none;">
+            <label for="moveDate2">재입주 날짜 (짐 들어가는 날) <span class="required">*</span></label>
+            <input type="date" id="moveDate2" name="moveDate2">
+            <small class="helper-text">보관 후 새 집으로 들어오시는 날짜를 선택해주세요.</small>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="privacyAgree" name="privacyAgree" required>
+                <span>[필수] 개인정보 수집 및 정보활용에 동의합니다.</span>
+            </label>
+        </div>
+
+        <button type="submit" id="submitBtn" class="submit-btn">견적 신청하기</button>
+    </form>
+</section>
+
+<script>
+    // 💡 오늘 이전 날짜 선택 방지 (페이지 로드 시 모든 date input에 min 속성 자동 부여)
+    document.addEventListener('DOMContentLoaded', () => {
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+            input.setAttribute('min', today);
+        });
+    });
+
+    function toggleStorageDate() {
+        const isChecked = document.getElementById('isStorageMove').checked;
+        const storageWrap = document.getElementById('storageDateWrap');
+        const dateLabel1 = document.getElementById('dateLabel1');
+        const moveDate2 = document.getElementById('moveDate2');
+
+        if (isChecked) {
+            storageWrap.style.display = 'flex';
+            dateLabel1.innerText = '1차 이사 날짜 (짐 빼는 날) *';
+            moveDate2.setAttribute('required', 'required');
+        } else {
+            storageWrap.style.display = 'none';
+            dateLabel1.innerText = '원하는 이사 날짜 *';
+            moveDate2.removeAttribute('required');
+            moveDate2.value = '';
+        }
+    }
+
+    function handleEstimateSubmit(form) {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.style.backgroundColor = '#6c757d';
+        btn.innerText = '처리 중입니다... 잠시만 기다려주세요.';
+    }
+</script>
+
+<!-- 7. LIVE 실시간 신청 현황 위젯 -->
+<section id="reviews-section" class="section process-list">
+    <style>
+        .live-status-card {
+            background: #fff;
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 100%;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            font-family: 'Malgun Gothic', sans-serif;
+        }
+
+        .live-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 10px;
+        }
+
+        .live-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #28a745;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 rgba(40, 167, 69, 0.4);
+            animation: pulse-live 1.5s infinite;
+        }
+
+        @keyframes pulse-live {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(40, 167, 69, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+            }
+        }
+
+        .live-count-badge {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: bold;
+        }
+
+        .live-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        .live-table th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-size: 0.9rem;
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        .live-table td {
+            padding: 12px 10px;
+            font-size: 0.95rem;
+            color: #333;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .live-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .live-table tr.fade-in {
+            animation: fadeInRow 0.8s ease-in-out;
+        }
+
+        @keyframes fadeInRow {
+            from {
+                opacity: 0;
+                background-color: #e8f4fd;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                background-color: transparent;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+    <div class="live-status-card">
+        <div class="live-header">
+            <div class="live-title-wrap">
+                <span class="live-dot"></span>
+                <strong>LIVE</strong> 실시간 신청 현황
+            </div>
+            <div class="live-count-badge">최근 5건</div>
+        </div>
+
+        <table class="live-table">
+            <thead>
+                <tr>
+                    <th>접수일</th>
+                    <th>이름</th>
+                    <th>연락처</th>
+                </tr>
+            </thead>
+            <tbody id="liveTableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const liveNamePool = ["김*수", "이*영", "박*진", "정*호", "조*민", "배*우", "윤*서", "최*준", "장*희", "임*우", "한*은", "오*진", "서*현", "신*철", "권*아", "황*준", "안*영", "송*우", "전*정", "고*진", "문*호", "양*서", "손*식", "백*민", "허*원"];
+        const phoneSuffixPool = ["0033", "6034", "0102", "7581", "7779", "4821", "9023", "3312", "5548", "1192", "8824", "3301", "2241", "6789", "4321", "5123", "9988", "4102", "3051", "7742"];
+
+        let liveDataList = [
+            { timeMinutes: 120, name: "손*식", phone: "010-****-0033" },
+            { timeMinutes: 300, name: "정*신", phone: "010-****-6034" },
+            { timeMinutes: 320, name: "김*란", phone: "010-****-0102" },
+            { timeMinutes: 480, name: "김*성", phone: "010-****-7581" },
+            { timeMinutes: 1020, name: "김*주", phone: "010-****-7779" }
+        ];
+
+        function formatLiveTime(minutes) {
+            if (minutes < 1) return "방금 전";
+            if (minutes < 60) return `${minutes}분 전`;
+            const hours = Math.floor(minutes / 60);
+            return `${hours}시간 전`;
+        }
+
+        function renderLiveTable(isNewAdded = false) {
+            const tbody = document.getElementById('liveTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            liveDataList.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                if (isNewAdded && index === 0) tr.classList.add('fade-in');
+                tr.innerHTML = `
+                    <td class="col-time">${formatLiveTime(item.timeMinutes)}</td>
+                    <td class="col-name">${item.name}</td>
+                    <td class="col-phone">${item.phone}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function simulateLiveUpdates() {
+            liveDataList.forEach(item => { item.timeMinutes += Math.floor(Math.random() * 20) + 10; });
+            const activePhones = liveDataList.map(item => item.phone);
+            const activeNames = liveDataList.map(item => item.name);
+
+            let randomName;
+            do { randomName = liveNamePool[Math.floor(Math.random() * liveNamePool.length)]; } while (activeNames.includes(randomName));
+
+            let randomSuffix, randomPhone, attempts = 0;
+            do {
+                randomSuffix = phoneSuffixPool[Math.floor(Math.random() * phoneSuffixPool.length)];
+                randomPhone = `010-****-${randomSuffix}`;
+                attempts++;
+            } while (activePhones.includes(randomPhone) && attempts < 20);
+
+            liveDataList.unshift({ timeMinutes: Math.floor(Math.random() * 30) + 10, name: randomName, phone: randomPhone });
+            if (liveDataList.length > 5) liveDataList.pop();
+            renderLiveTable(true);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderLiveTable(false);
+            setInterval(simulateLiveUpdates, 10000);
+        });
+    </script>
+</section>
+
+<!-- 10. 견적 요청 필요 자료 소개 및 고객 유의사항 -->
+<section class="section notice-box">
+    <h3></h3>
+    <p></p>
+</section>
+
+<!-- 11. 달력 섹션 -->
+<section id="calendar-section" class="section calendar-section">
+    <h3 class="section-title">이사 달력</h3>
+
+    <div id="todayDisplay" class="calendar-today-banner">오늘 날짜: 로딩 중...</div>
+
+    <div class="calendar-legend">
+        <div class="legend-item">
+            <span class="legend-color no-hand-bg"></span>
+            <span>손없는 날 (배경 명암 표시)</span>
+        </div>
+    </div>
+
+    <div class="calendar-header">
+        <div class="year-select-wrap">
+            <select id="yearSelect" onchange="changeCalendar()">
+                <option value="2025">2025년</option>
+                <option value="2026" selected>2026년</option>
+                <option value="2027">2027년</option>
+                <option value="2028">2028년</option>
+                <option value="2029">2029년</option>
+                <option value="2030">2030년</option>
+                <option value="2031">2031년</option>
+                <option value="2032">2032년</option>
+                <option value="2033">2033년</option>
+                <option value="2034">2034년</option>
+                <option value="2035">2035년</option>
+            </select>
+        </div>
+        <div class="month-nav-wrap">
+            <button class="cal-nav-btn" onclick="prevMonth()">&lsaquo;</button>
+            <span id="currentMonthText" class="current-month">10월</span>
+            <button class="cal-nav-btn" onclick="nextMonth()">&rsaquo;</button>
+        </div>
+    </div>
+
+    <div class="calendar-table-wrap">
+        <table class="calendar-table large-mobile-cal">
+            <thead>
+                <tr>
+                    <th class="sun">일</th>
+                    <th>월</th>
+                    <th>화</th>
+                    <th>수</th>
+                    <th>목</th>
+                    <th>금</th>
+                    <th class="sat">토</th>
+                </tr>
+            </thead>
+            <tbody id="calendarBody"></tbody>
+        </table>
+    </div>
+</section>
+
+<script>
+    let currentYear = 2026;
+    let currentMonth = 9;
+    let noHandDaysSet = new Set();
+
+    async function initNoHandDays() {
+        try {
+            const response = await fetch('/api/nohand-days');
+            const data = await response.json();
+            noHandDaysSet = new Set(data.noHandDays);
+            renderCalendar();
+        } catch (e) {
+            console.error("손없는 날 데이터 로드 실패:", e);
+            renderCalendar();
+        }
+    }
+
+    function displayToday() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = today.getMonth() + 1;
+        const dd = today.getDate();
+        const days = ['일', '월', '화', '수', '목', '금', '토'];
+        const dayName = days[today.getDay()];
+        document.getElementById('todayDisplay').innerText = `📍 오늘 날짜: ${yyyy}년 ${mm}월 ${dd}일 (${dayName})`;
+    }
+
+    function renderCalendar() {
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        document.getElementById('yearSelect').value = currentYear;
+        document.getElementById('currentMonthText').innerText = `${currentMonth + 1}월`;
+
+        const tbody = document.getElementById('calendarBody');
+        tbody.innerHTML = '';
+
+        let dateCounter = 1;
+        for (let i = 0; i < 6; i++) {
+            let row = document.createElement('tr');
+            let hasDate = false;
+
+            for (let j = 0; j < 7; j++) {
+                let cell = document.createElement('td');
+
+                if ((i === 0 && j < firstDay) || dateCounter > lastDate) {
+                    cell.innerHTML = '';
+                } else {
+                    hasDate = true;
+                    const mmStr = String(currentMonth + 1).padStart(2, '0');
+                    const ddStr = String(dateCounter).padStart(2, '0');
+                    const dateStr = `${currentYear}-${mmStr}-${ddStr}`;
+
+                    cell.innerHTML = `<span class="day-number">${dateCounter}</span>`;
+
+                    if (noHandDaysSet.has(dateStr)) {
+                        cell.classList.add('no-hand-day');
+                    }
+
+                    if (j === 0) cell.classList.add('sun');
+                    if (j === 6) cell.classList.add('sat');
+
+                    dateCounter++;
+                }
+                row.appendChild(cell);
+            }
+            if (hasDate) tbody.appendChild(row);
+        }
+    }
+
+    function prevMonth() {
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        renderCalendar();
+    }
+
+    function nextMonth() {
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        renderCalendar();
+    }
+
+    function changeCalendar() {
+        currentYear = parseInt(document.getElementById('yearSelect').value);
+        renderCalendar();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        displayToday();
+        initNoHandDays();
+    });
+</script>
+
+<!-- 파트너 및 협력사 빠른 이동 버튼 영역 (좌측: 파트너 모집 / 우측: 협력사 소개) -->
+<div style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
+    <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between;">
+        <a href="#partner-recruit"
+            style="flex: 1; text-align: center; padding: 14px 10px; background: #fff; border: 2px solid #ff9800; border-radius: 8px; color: #ff9800; font-weight: bold; text-decoration: none; font-size: 1.05rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">🤝
+            파트너 모집</a>
+        <a href="#partner-intro"
+            style="flex: 1; text-align: center; padding: 14px 10px; background: #fff; border: 2px solid #4a6fa5; border-radius: 8px; color: #4a6fa5; font-weight: bold; text-decoration: none; font-size: 1.05rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">🏢
+            협력사 소개</a>
+    </div>
+</div>
+
+<!-- 12. 가입 증명서 소개 -->
+<section id="certificate-section" class="section cert-section">
+    <h3>가입 증명서 소개</h3>
+    <p>보험 가입 증명서 / 여성기업 확인서</p>
+
+    <div class="cert-slider-container">
+        <button class="slider-btn prev-btn" onclick="moveSlide(-1)">&#10094;</button>
+
+        <div class="cert-slides">
+            <div class="cert-item">
+                <img src="{{ url_for('static', filename='Certificate of Insurance.png') }}" alt="보험 가입 증명서">
+            </div>
+            <div class="cert-item">
+                <img src="{{ url_for('static', filename='Corporate certificate.png') }}" alt="여성 기업 확인서">
+            </div>
+        </div>
+
+        <button class="slider-btn next-btn" onclick="moveSlide(1)">&#10095;</button>
+    </div>
+</section>
+
+<script>
+    let currentSlide = 0;
+    function moveSlide(direction) {
+        const slides = document.querySelectorAll('.cert-slides .cert-item');
+        if (window.innerWidth <= 768) {
+            currentSlide += direction;
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= slides.length) currentSlide = slides.length - 1;
+
+            const offset = -currentSlide * 100;
+            document.querySelector('.cert-slides').style.transform = `translateX(${offset}%)`;
+
+            document.querySelector('.prev-btn').style.display = currentSlide === 0 ? 'none' : 'block';
+            document.querySelector('.next-btn').style.display = currentSlide === slides.length - 1 ? 'none' : 'block';
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (window.innerWidth <= 768) {
+            document.querySelector('.prev-btn').style.display = 'none';
+        }
+    });
+</script>
+
+<!-- ================= 아이템 12와 13 사이에 추가된 파트너 모집 및 협력사 소개 섹션 ================= -->
+
+<!-- 파트너 모집 상세 내용 섹션 -->
+<section id="partner-recruit" class="section"
+    style="background: #fff; border-radius: 12px; padding: 40px 30px; margin: 30px auto; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    <h3
+        style="font-size: 1.5rem; color: #1a1a1a; margin-bottom: 20px; font-weight: bold; border-left: 5px solid #ff9800; padding-left: 12px;">
+        🤝 파트너 모집</h3>
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 15px;">
+        <p style="font-weight: bold; color: #333; margin-bottom: 10px;">📌 모집 안내</p>
+        <ul style="color: #666; line-height: 1.7; padding-left: 20px; margin: 0;">
+            <li><strong>지원 자격:</strong> 주선사업권 보유업체<br>(미 보유업체 협의)</li>
+            <li><strong>모집 지역:</strong> 각 지역 1팀만 모집</li>
+        </ul>
+    </div>
+</section>
+
+<!-- 협력사 소개 및 전화 연결 섹션 -->
+<section id="partner-intro" class="section"
+    style="background: #fff; border-radius: 12px; padding: 40px 30px; margin: 30px auto; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    <h3
+        style="font-size: 1.5rem; color: #1a1a1a; margin-bottom: 20px; font-weight: bold; border-left: 5px solid #4a6fa5; padding-left: 12px;">
+        🏢 협력 업체</h3>
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+        <!-- 협력사 1 -->
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; background: #fafbfc; border: 1px solid #e1e8ed; border-radius: 8px; padding: 18px 20px;">
+            <!-- 왼쪽: 업체명 및 대표자/전화번호 영역 (위아래 세로 정렬) -->
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <!-- 1행: 업체명 -->
+                <div style="font-weight: bold; font-size: 1.1rem; color: #212529;">
+                    TV 이전설치
+                </div>
+                <!-- 2행: 대표자명 + 전화번호 (가로 정렬) -->
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: bold; color: #212529; font-size: 0.95rem;">홍성일 대표</span>
+                    <span style="color: #6c757d; font-size: 0.95rem;">010-7367-0124</span>
+                </div>
+            </div>
+
+            <!-- 우측: 전화 연결 버튼 -->
+            <a href="tel:010-7367-0124"
+                style="background-color: #28a745; color: #fff; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(40,167,69,0.2); flex-shrink: 0;">
+                📞
+            </a>
+        </div>
+
+        <!-- 협력사 2 -->
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; background: #fafbfc; border: 1px solid #e1e8ed; border-radius: 8px; padding: 18px 20px;">
+            <!-- 왼쪽: 업체명 및 대표자/전화번호 영역 (위아래 세로 정렬) -->
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <!-- 1행: 업체명 -->
+                <div style="font-weight: bold; font-size: 1.1rem; color: #212529;">
+                    에어컨 천아
+                </div>
+                <!-- 2행: 대표자명 + 전화번호 (가로 정렬) -->
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: bold; color: #212529; font-size: 0.95rem;">한기수 대표</span>
+                    <span style="color: #6c757d; font-size: 0.95rem;">010-7205-1478</span>
+                </div>
+            </div>
+
+            <!-- 우측: 전화 연결 버튼 -->
+            <a href="tel:010-7205-1478"
+                style="background-color: #28a745; color: #fff; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(40,167,69,0.2); flex-shrink: 0;">
+                📞
+            </a>
+        </div>
+
+        <!-- 협력사 3 -->
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; background: #fafbfc; border: 1px solid #e1e8ed; border-radius: 8px; padding: 18px 20px;">
+            <!-- 왼쪽: 업체명 및 대표자/전화번호 영역 (위아래 세로 정렬) -->
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <!-- 1행: 업체명 -->
+                <div style="font-weight: bold; font-size: 1.1rem; color: #212529;">
+                    에어컨 청소
+                </div>
+                <!-- 2행: 대표자명 + 전화번호 (가로 정렬) -->
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: bold; color: #212529; font-size: 0.95rem;">오윤혁 대표</span>
+                    <span style="color: #6c757d; font-size: 0.95rem;">010-4846-7559</span>
+                </div>
+            </div>
+
+            <!-- 우측: 전화 연결 버튼 -->
+            <a href="tel:010-4846-7559"
+                style="background-color: #28a745; color: #fff; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(40,167,69,0.2); flex-shrink: 0;">
+                📞
+            </a>
+        </div>
+
+        <!-- 협력사 4 -->
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; background: #fafbfc; border: 1px solid #e1e8ed; border-radius: 8px; padding: 18px 20px;">
+            <!-- 왼쪽: 업체명 및 대표자/전화번호 영역 (위아래 세로 정렬) -->
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <!-- 1행: 업체명 -->
+                <div style="font-weight: bold; font-size: 1.1rem; color: #212529;">
+                    경민청소
+                </div>
+                <!-- 2행: 대표자명 + 전화번호 (가로 정렬) -->
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: bold; color: #212529; font-size: 0.95rem;">김선진 대표</span>
+                    <span style="color: #6c757d; font-size: 0.95rem;">010-6313-5542</span>
+                </div>
+            </div>
+
+            <!-- 우측: 전화 연결 버튼 -->
+            <a href="tel:010-6313-5542"
+                style="background-color: #28a745; color: #fff; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(40,167,69,0.2); flex-shrink: 0;">
+                📞
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<!-- ================================================================================= -->
+
+<!-- 13. 사업자 표시 및 약관 (푸터) -->
+<footer class="footer-area">
+    <p class="footer-title">청년이사 프라임 익스프레스</p>
+
+    <div class="footer-links">
+        <a href="/terms">이용약관</a> |
+        <a href="/privacy">개인정보처리방침</a>
+    </div>
+
+    <div class="footer-details">
+        대표자: 심미섭<br>
+        사업자등록번호: 226-26-20063<br>
+        주소: 충청남도 천안시 동남구 신흥1길 7, 101호(신방동)<br>
+        대표번호: 010-9135-5709 (평일 09:00 ~ 18:00)<br>
+        화물자동차 운송주선사업 허가증: 제 4490000-2002-03-00048 호<br>
+        Copyright ⓒ 청년이사 프라임 익스프레스 All rights reserved.
+    </div>
+</footer>
+{% endblock %}
