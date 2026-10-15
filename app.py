@@ -29,6 +29,7 @@ else:
     app.config["SESSION_COOKIE_SECURE"] = False
 
 app.secret_key = "prime_moving_admin_secure_secret_key_2026"  # 👈 고정 키
+app.config['SESSION_PERMANENT'] = False  # 세션을 영구 보관하지 않음
 
 DATA_FILE = "nohand_days.txt"
 ESTIMATE_FILE = "estimates.txt"
