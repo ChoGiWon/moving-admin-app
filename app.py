@@ -388,7 +388,7 @@ if __name__ == "__main__":
 
         generate_lunar_nohand_days()
 
-    app.run(host='0.0.0.0', port=5000, debug=True, ssl_context=("cert.pem", "key.pem"))
+    app.run(host='0.0.0.0', port=5000, debug=True)
     #app.run(
     #    host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem")
     #)  # 서버에 설정된 인증서 파일명에 맞게 조정 필요
