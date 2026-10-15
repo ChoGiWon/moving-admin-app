@@ -2,6 +2,12 @@
 {% block title %}청년이사 프라임 익스프레스 - 홈{% endblock %}
 
 {% block content %}
+<!-- 💡 버전 확인용 타이틀 표시 추가 -->
+<div style="background: #222; color: #ff9800; padding: 6px 20px; font-size: 0.85rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333;">
+    <span>청년이사 프라임 익스프레스</span>
+    <span style="background: #ff9800; color: #111; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">v1.0.0</span>
+</div>
+
 <!-- 5. 회사 소개 (10장 사진 2초 간격 순차 전환 및 고정 텍스트 오버레이) -->
 <section class="section company-intro">
     <style>
@@ -178,7 +184,7 @@
 </section>
 
 <script>
-    // 💡 오늘 이전 날짜 선택 방지 (페이지 로드 시 모든 date input에 min 속성 자동 부여)
+    // 오늘 이전 날짜 선택 방지 (페이지 로드 시 모든 date input에 min 속성 자동 부여)
     document.addEventListener('DOMContentLoaded', () => {
         const today = new Date().toISOString().split('T')[0];
         document.querySelectorAll('input[type="date"]').forEach(input => {
@@ -613,8 +619,6 @@
     });
 </script>
 
-<!-- ================= 아이템 12와 13 사이에 추가된 파트너 모집 및 협력사 소개 섹션 ================= -->
-
 <!-- 파트너 모집 상세 내용 섹션 -->
 <section id="partner-recruit" class="section"
     style="background: #fff; border-radius: 12px; padding: 40px 30px; margin: 30px auto; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
@@ -640,20 +644,15 @@
         <!-- 협력사 1 -->
         <div
             style="display: flex; justify-content: space-between; align-items: center; background: #fafbfc; border: 1px solid #e1e8ed; border-radius: 8px; padding: 18px 20px;">
-            <!-- 왼쪽: 업체명 및 대표자/전화번호 영역 (위아래 세로 정렬) -->
             <div style="display: flex; flex-direction: column; gap: 4px;">
-                <!-- 1행: 업체명 -->
                 <div style="font-weight: bold; font-size: 1.1rem; color: #212529;">
                     TV 이전설치
                 </div>
-                <!-- 2행: 대표자명 + 전화번호 (가로 정렬) -->
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-weight: bold; color: #212529; font-size: 0.95rem;">홍성일 대표</span>
                     <span style="color: #6c757d; font-size: 0.95rem;">010-7367-0124</span>
                 </div>
             </div>
-
-            <!-- 우측: 전화 연결 버튼 -->
             <a href="tel:010-7367-0124"
                 style="background-color: #28a745; color: #fff; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(40,167,69,0.2); flex-shrink: 0;">
                 📞
@@ -663,20 +662,15 @@
         <!-- 협력사 2 -->
         <div
             style="display: flex; justify-content: space-between; align-items: center; background: #fafbfc; border: 1px solid #e1e8ed; border-radius: 8px; padding: 18px 20px;">
-            <!-- 왼쪽: 업체명 및 대표자/전화번호 영역 (위아래 세로 정렬) -->
             <div style="display: flex; flex-direction: column; gap: 4px;">
-                <!-- 1행: 업체명 -->
                 <div style="font-weight: bold; font-size: 1.1rem; color: #212529;">
                     에어컨 천아
                 </div>
-                <!-- 2행: 대표자명 + 전화번호 (가로 정렬) -->
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-weight: bold; color: #212529; font-size: 0.95rem;">한기수 대표</span>
                     <span style="color: #6c757d; font-size: 0.95rem;">010-7205-1478</span>
                 </div>
             </div>
-
-            <!-- 우측: 전화 연결 버튼 -->
             <a href="tel:010-7205-1478"
                 style="background-color: #28a745; color: #fff; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(40,167,69,0.2); flex-shrink: 0;">
                 📞
@@ -686,20 +680,15 @@
         <!-- 협력사 3 -->
         <div
             style="display: flex; justify-content: space-between; align-items: center; background: #fafbfc; border: 1px solid #e1e8ed; border-radius: 8px; padding: 18px 20px;">
-            <!-- 왼쪽: 업체명 및 대표자/전화번호 영역 (위아래 세로 정렬) -->
             <div style="display: flex; flex-direction: column; gap: 4px;">
-                <!-- 1행: 업체명 -->
                 <div style="font-weight: bold; font-size: 1.1rem; color: #212529;">
                     에어컨 청소
                 </div>
-                <!-- 2행: 대표자명 + 전화번호 (가로 정렬) -->
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-weight: bold; color: #212529; font-size: 0.95rem;">오윤혁 대표</span>
                     <span style="color: #6c757d; font-size: 0.95rem;">010-4846-7559</span>
                 </div>
             </div>
-
-            <!-- 우측: 전화 연결 버튼 -->
             <a href="tel:010-4846-7559"
                 style="background-color: #28a745; color: #fff; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(40,167,69,0.2); flex-shrink: 0;">
                 📞
@@ -709,20 +698,15 @@
         <!-- 협력사 4 -->
         <div
             style="display: flex; justify-content: space-between; align-items: center; background: #fafbfc; border: 1px solid #e1e8ed; border-radius: 8px; padding: 18px 20px;">
-            <!-- 왼쪽: 업체명 및 대표자/전화번호 영역 (위아래 세로 정렬) -->
             <div style="display: flex; flex-direction: column; gap: 4px;">
-                <!-- 1행: 업체명 -->
                 <div style="font-weight: bold; font-size: 1.1rem; color: #212529;">
                     경민청소
                 </div>
-                <!-- 2행: 대표자명 + 전화번호 (가로 정렬) -->
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-weight: bold; color: #212529; font-size: 0.95rem;">김선진 대표</span>
                     <span style="color: #6c757d; font-size: 0.95rem;">010-6313-5542</span>
                 </div>
             </div>
-
-            <!-- 우측: 전화 연결 버튼 -->
             <a href="tel:010-6313-5542"
                 style="background-color: #28a745; color: #fff; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(40,167,69,0.2); flex-shrink: 0;">
                 📞
@@ -731,8 +715,6 @@
 
     </div>
 </section>
-
-<!-- ================================================================================= -->
 
 <!-- 13. 사업자 표시 및 약관 (푸터) -->
 <footer class="footer-area">
