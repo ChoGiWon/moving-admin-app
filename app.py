@@ -374,16 +374,16 @@ def admin_delete(est_id):
 
 
 if __name__ == "__main__":
-    # if not os.path.exists(DATA_FILE):
-    #    from generate_data import generate_lunar_nohand_days
+     if not os.path.exists(DATA_FILE):
+        from generate_data import generate_lunar_nohand_days
 
-    #    generate_lunar_nohand_days()
+        generate_lunar_nohand_days()
 
-    # app.run(
-    #    host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem")
-    # )  # 서버에 설정된 인증서 파일명에 맞게 조정 필요
+     app.run(
+        host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem")
+     )  # 서버에 설정된 인증서 파일명에 맞게 조정 필요
 
-    if os.path.exists("cert.pem") and os.path.exists("key.pem"):
-        app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
-    else:
-        app.run(host="127.0.0.1", port=5000, debug=True)
+    #if os.path.exists("cert.pem") and os.path.exists("key.pem"):
+    #    app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
+    #else:
+    #    app.run(host="127.0.0.1", port=5000, debug=True)
