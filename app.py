@@ -382,13 +382,12 @@ def admin_delete(est_id):
     return jsonify({"success": True})
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     if not os.path.exists(DATA_FILE):
         from generate_data import generate_lunar_nohand_days
-
         generate_lunar_nohand_days()
 
-    app.run(host='0.0.0.0', port=5000, ssl_context=('cert.pem', 'key.pem'), debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)
     #app.run(
     #    host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem")
     #)  # 서버에 설정된 인증서 파일명에 맞게 조정 필요
