@@ -190,6 +190,9 @@ def get_nohand_days():
 # --- [견적 제출 및 FCM 푸시 알림 라우트] ---
 @app.route("/estimate", methods=["POST"])
 def submit_estimate():
+    print("========================================")
+    print("🚀 /estimate 라우트(견적 접수) 진입 성공!")
+    print("========================================")
     user_name = request.form.get("userName")
     user_phone = request.form.get("userPhone")
     departure = request.form.get("departure", "").strip()
