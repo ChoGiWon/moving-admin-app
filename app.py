@@ -21,15 +21,21 @@ from datetime import datetime
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 # 로컬(HTTP)과 서버(HTTPS) 환경에 따라 쿠키 보안 설정 자동 분기
-if os.path.exists("cert.pem") and os.path.exists("key.pem"):
-    app.config["SESSION_COOKIE_SAMESITE"] = "None"
-    app.config["SESSION_COOKIE_SECURE"] = True
-else:
-    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-    app.config["SESSION_COOKIE_SECURE"] = False
+# 수정 전
+# if os.path.exists("cert.pem") and os.path.exists("key.pem"):
+#     app.config["SESSION_COOKIE_SAMESITE"] = "None"
+#     app.config["SESSION_COOKIE_SECURE"] = True
+# else:
+#     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+#     app.config["SESSION_COOKIE_SECURE"] = False
+
+# 수정 후: 세션이 브라우저/앱 종료 시 확실히 만료되도록 설정
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = False
+app.config["SESSION_PERMANENT"] = False  # 세션을 영구 보관하지 않음
 
 app.secret_key = "prime_moving_admin_secure_secret_key_2026"  # 👈 고정 키
-app.config['SESSION_PERMANENT'] = False  # 세션을 영구 보관하지 않음
+app.config["SESSION_PERMANENT"] = False  # 세션을 영구 보관하지 않음
 
 DATA_FILE = "nohand_days.txt"
 ESTIMATE_FILE = "estimates.txt"
@@ -383,15 +389,16 @@ def admin_delete(est_id):
     return jsonify({"success": True})
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if not os.path.exists(DATA_FILE):
         from generate_data import generate_lunar_nohand_days
+
         generate_lunar_nohand_days()
 
-    app.run(host='0.0.0.0', port=5000, debug=False)
-    #app.run(
+    app.run(host="0.0.0.0", port=5000, debug=False)
+    # app.run(
     #    host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem")
-    #)  # 서버에 설정된 인증서 파일명에 맞게 조정 필요
+    # )  # 서버에 설정된 인증서 파일명에 맞게 조정 필요
 
 # if os.path.exists("cert.pem") and os.path.exists("key.pem"):
 #    app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
