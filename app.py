@@ -78,17 +78,13 @@ def send_fcm_push(title, body):
     # 등록된 토큰을 순회하며 각각 단건(1:1) 발송
     for i, token in enumerate(tokens_list):
         try:
+            # 💡 [핵심 수정] notification/webpush를 제거하고 data에 title, body를 담아 sw.js가 제어하도록 통일
             message = messaging.Message(
-                notification=messaging.Notification(
-                    title=title,
-                    body=body,
-                ),
-                webpush=messaging.WebpushConfig(
-                    notification=messaging.WebpushNotification(
-                        title=title, body=body, icon="/static/logo-main.png"
-                    )
-                ),
-                data={"url": "https://prime-express.duckdns.org/admin"},
+                data={
+                    "title": title,
+                    "body": body,
+                    "url": "https://prime-express.duckdns.org/admin",
+                },
                 token=token,
             )
 
