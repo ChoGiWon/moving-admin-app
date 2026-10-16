@@ -56,7 +56,11 @@ def send_fcm_push(title, body):
     tokens = []
     try:
         with open(TOKEN_FILE, "r", encoding="utf-8") as f:
-            tokens = json.load(f)
+            content = json.load(f)
+            if isinstance(content, dict):
+                tokens = list(content.values())  # 딕셔너리 값(토큰들)만 추출
+            elif isinstance(content, list):
+                tokens = content
     except Exception as e:
         print("토큰 파일 읽기 에러:", e)
         return
@@ -85,7 +89,9 @@ def send_fcm_push(title, body):
 
         # 한 번에 일괄 발송 요청
         response = messaging.send_each_for_multicast(message)
-        print(f"✨ FCM 일괄 발송 완료! 성공: {response.success_count}건, 실패: {response.failure_count}건")
+        print(
+            f"✨ FCM 일괄 발송 완료! 성공: {response.success_count}건, 실패: {response.failure_count}건"
+        )
 
     except Exception as e:
         print(f"🚨 FCM 일괄 발송 중 예외 발생: {e}")
@@ -206,8 +212,7 @@ def submit_estimate():
 
     # 💡 [핵심 개선] 알림 발송을 백그라운드 스레드로 분리하여 고객 화면 딜레이 원천 차단 (0초 체감)
     threading.Thread(
-        target=send_fcm_push,
-        args=("🚨 새로운 이삿짐 견적 접수!", push_body)
+        target=send_fcm_push, args=("🚨 새로운 이삿짐 견적 접수!", push_body)
     ).start()
 
     return redirect(url_for("home"))
@@ -309,23 +314,34 @@ def admin_update(est_id):
 
 @app.route("/admin/save-token", methods=["POST"])
 def save_token():
-    data = request.get_json()
+    data = request.get_json() or {}
     token = data.get("token")
-    if token:
-        tokens = []
-        if os.path.exists(TOKEN_FILE):
-            with open(TOKEN_FILE, "r", encoding="utf-8") as f:
-                try:
-                    tokens = json.load(f)
-                except:
-                    tokens = []
-        if token not in tokens:
-            tokens.append(token)
-            with open(TOKEN_FILE, "w", encoding="utf-8") as f:
-                json.dump(tokens, f, ensure_ascii=False, indent=4)
-            print(f"새로운 관리자 기기 토큰 저장됨: {token}")
-        return jsonify({"status": "success"})
-    return jsonify({"status": "fail"}), 400
+    device_id = data.get("device_id")  # 클라이언트에서 보내주는 기기 고유 ID
+
+    if not token or not device_id:
+        return jsonify({"status": "fail", "message": "token or device_id missing"}), 400
+
+    tokens_map = {}
+    if os.path.exists(TOKEN_FILE):
+        with open(TOKEN_FILE, "r", encoding="utf-8") as f:
+            try:
+                content = json.load(f)
+                # 하위 호환성: 기존 리스트 형태 파일인 경우 처리
+                if isinstance(content, list):
+                    tokens_map = {f"legacy_{i}": t for i, t in enumerate(content)}
+                elif isinstance(content, dict):
+                    tokens_map = content
+            except:
+                tokens_map = {}
+
+    # 💡 동일한 기기 ID가 있으면 최신 토큰으로 덮어쓰기(Upsert), 없으면 새로 등록
+    tokens_map[device_id] = token
+
+    with open(TOKEN_FILE, "w", encoding="utf-8") as f:
+        json.dump(tokens_map, f, ensure_ascii=False, indent=4)
+
+    print(f"📌 관리자 기기 토큰 갱신 완료 (Device ID: {device_id})")
+    return jsonify({"status": "success"})
 
 
 @app.route("/sw.js")
