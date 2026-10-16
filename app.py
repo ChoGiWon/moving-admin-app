@@ -46,55 +46,65 @@ except Exception as e:
 
 def send_fcm_push(title, body):
     """
-    백그라운드에서 실행되는 최적화된 FCM 멀티캐스트(배치) 전송 함수
-    - 모든 토큰을 한 번의 요청으로 일괄 전송하여 지연 시간 최소화 (0.2초 이내)
+    견적 요청 1건당 등록된 각 토큰에 정확히 1개씩만 단건 발송하는 함수
+    - 최대 5개의 토큰에 대해 1:1 매핑 발송 보장
     """
     if not os.path.exists(TOKEN_FILE):
         print("토큰 파일이 존재하지 않습니다.")
         return
 
-    tokens = []
+    tokens_map = {}
     try:
         with open(TOKEN_FILE, "r", encoding="utf-8") as f:
             content = json.load(f)
             if isinstance(content, dict):
-                tokens = list(content.values())  # 딕셔너리 값(토큰들)만 추출
+                tokens_map = content
             elif isinstance(content, list):
-                tokens = content
+                tokens_map = {f"legacy_{i}": t for i, t in enumerate(content)}
     except Exception as e:
         print("토큰 파일 읽기 에러:", e)
         return
 
-    if not tokens:
+    if not tokens_map:
         print("등록된 관리자 토큰이 없습니다.")
         return
 
-    print(f"📌 [배치 전송] 대상 관리자 기기 토큰 개수: {len(tokens)}개")
+    tokens_list = list(tokens_map.values())
+    print(
+        f"📌 [단건 1:1 발송 시작] 대상 관리자 토큰 개수: {len(tokens_list)}개 (최대 5개 제한)"
+    )
 
-    try:
-        # 💡 Firebase 멀티캐스트 메시지 객체 생성 (다중 토큰 일괄 전송)
-        message = messaging.MulticastMessage(
-            notification=messaging.Notification(
-                title=title,
-                body=body,
-            ),
-            webpush=messaging.WebpushConfig(
-                notification=messaging.WebpushNotification(
-                    title=title, body=body, icon="/static/logo-main.png"
-                )
-            ),
-            data={"url": "https://prime-express.duckdns.org/admin"},
-            tokens=tokens,
-        )
+    success_count = 0
+    failure_count = 0
 
-        # 한 번에 일괄 발송 요청
-        response = messaging.send_each_for_multicast(message)
-        print(
-            f"✨ FCM 일괄 발송 완료! 성공: {response.success_count}건, 실패: {response.failure_count}건"
-        )
+    # 💡 핵심: 전체 토큰 리스트를 순회하며 "토큰 1개당 메시지 1개"만 정확히 개별 전송
+    for i, token in enumerate(tokens_list):
+        try:
+            message = messaging.Message(
+                notification=messaging.Notification(
+                    title=title,
+                    body=body,
+                ),
+                webpush=messaging.WebpushConfig(
+                    notification=messaging.WebpushNotification(
+                        title=title, body=body, icon="/static/logo-main.png"
+                    )
+                ),
+                data={"url": "https://prime-express.duckdns.org/admin"},
+                token=token,  # 👈 단일 토큰 지정 (멀티캐스트 아님)
+            )
 
-    except Exception as e:
-        print(f"🚨 FCM 일괄 발송 중 예외 발생: {e}")
+            response = messaging.send(message)
+            success_count += 1
+            print(f"✨ [발송 성공 {i+1}/{len(tokens_list)}] 토큰: {token[:10]}...")
+
+        except Exception as e:
+            failure_count += 1
+            print(f"🚨 [발송 실패 {i+1}/{len(tokens_list)}] 에러: {e}")
+
+    print(
+        f"✨ FCM 단건 발송 최종 완료! 성공: {success_count}건, 실패: {failure_count}건"
+    )
 
 
 def load_nohand_days():
@@ -314,34 +324,52 @@ def admin_update(est_id):
 
 @app.route("/admin/save-token", methods=["POST"])
 def save_token():
-    data = request.get_json() or {}
+    data = request.json
     token = data.get("token")
-    device_id = data.get("device_id")  # 클라이언트에서 보내주는 기기 고유 ID
+    device_id = data.get("device_id", "unknown_device")  # 기기 ID 활용
 
-    if not token or not device_id:
-        return jsonify({"status": "fail", "message": "token or device_id missing"}), 400
+    if not token:
+        return jsonify({"success": False, "message": "토큰이 없습니다."}), 400
 
     tokens_map = {}
     if os.path.exists(TOKEN_FILE):
-        with open(TOKEN_FILE, "r", encoding="utf-8") as f:
-            try:
+        try:
+            with open(TOKEN_FILE, "r", encoding="utf-8") as f:
                 content = json.load(f)
-                # 하위 호환성: 기존 리스트 형태 파일인 경우 처리
-                if isinstance(content, list):
-                    tokens_map = {f"legacy_{i}": t for i, t in enumerate(content)}
-                elif isinstance(content, dict):
+                if isinstance(content, dict):
                     tokens_map = content
-            except:
-                tokens_map = {}
+                elif isinstance(content, list):
+                    # 기존 리스트 형태 호환
+                    tokens_map = {f"legacy_{i}": t for i, t in enumerate(content)}
+        except Exception as e:
+            print("토큰 파일 읽기 에러:", e)
+            tokens_map = {}
 
-    # 💡 동일한 기기 ID가 있으면 최신 토큰으로 덮어쓰기(Upsert), 없으면 새로 등록
+    # 💡 1. 갱신 (Upsert): 이미 존재하는 device_id면 덮어쓰고, 없으면 새로 추가
+    # 💡 2. 중복 방지: 동일한 토큰 값이 다른 device_id로 들어오는 경우도 방지
+    # 기존에 같은 토큰이 있다면 제거 후 최신으로 등록
+    tokens_map = {d: t for d, t in tokens_map.items() if t != token}
     tokens_map[device_id] = token
 
-    with open(TOKEN_FILE, "w", encoding="utf-8") as f:
-        json.dump(tokens_map, f, ensure_ascii=False, indent=4)
+    # 💡 3. 최대 5개 제한 (가장 오래된 것부터 밀어내기)
+    if len(tokens_map) > 5:
+        # 딕셔너리의 키(아이템) 중 가장 초과된 만큼 앞의 것들을 삭제
+        excess_keys = list(tokens_map.keys())[:-5]
+        for k in excess_keys:
+            del tokens_map[k]
 
-    print(f"📌 관리자 기기 토큰 갱신 완료 (Device ID: {device_id})")
-    return jsonify({"status": "success"})
+    # 파일에 저장
+    try:
+        with open(TOKEN_FILE, "w", encoding="utf-8") as f:
+            json.dump(tokens_map, f, ensure_ascii=False, indent=4)
+        print(
+            f"📌 토큰 저장 완료. 현재 유효한 관리자 기기 수: {len(tokens_map)}대 (최대 5개 제한 적용)"
+        )
+    except Exception as e:
+        print("토큰 파일 저장 에러:", e)
+        return jsonify({"success": False, "message": "저장 실패"}), 500
+
+    return jsonify({"success": True})
 
 
 @app.route("/sw.js")
