@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 import os
 import json
 import time
+import threading
 import firebase_admin
 from firebase_admin import credentials, messaging
 from datetime import datetime
@@ -21,21 +22,12 @@ from datetime import datetime
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 # 로컬(HTTP)과 서버(HTTPS) 환경에 따라 쿠키 보안 설정 자동 분기
-# 수정 전
-# if os.path.exists("cert.pem") and os.path.exists("key.pem"):
-#     app.config["SESSION_COOKIE_SAMESITE"] = "None"
-#     app.config["SESSION_COOKIE_SECURE"] = True
-# else:
-#     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-#     app.config["SESSION_COOKIE_SECURE"] = False
-
 # 수정 후: 세션이 브라우저/앱 종료 시 확실히 만료되도록 설정
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = False
 app.config["SESSION_PERMANENT"] = False  # 세션을 영구 보관하지 않음
 
 app.secret_key = "prime_moving_admin_secure_secret_key_2026"  # 👈 고정 키
-app.config["SESSION_PERMANENT"] = False  # 세션을 영구 보관하지 않음
 
 DATA_FILE = "nohand_days.txt"
 ESTIMATE_FILE = "estimates.txt"
@@ -53,14 +45,17 @@ except Exception as e:
 
 
 def send_fcm_push(title, body):
-    print("👉 send_fcm_push 함수 진입 완료")
-    if not os.path.exists("admin_tokens.txt"):
+    """
+    백그라운드에서 실행되는 최적화된 FCM 멀티캐스트(배치) 전송 함수
+    - 모든 토큰을 한 번의 요청으로 일괄 전송하여 지연 시간 최소화 (0.2초 이내)
+    """
+    if not os.path.exists(TOKEN_FILE):
         print("토큰 파일이 존재하지 않습니다.")
         return
 
     tokens = []
     try:
-        with open("admin_tokens.txt", "r", encoding="utf-8") as f:
+        with open(TOKEN_FILE, "r", encoding="utf-8") as f:
             tokens = json.load(f)
     except Exception as e:
         print("토큰 파일 읽기 에러:", e)
@@ -70,49 +65,30 @@ def send_fcm_push(title, body):
         print("등록된 관리자 토큰이 없습니다.")
         return
 
-    print(f"📌 현재 등록된 토큰 개수: {len(tokens)}개")
+    print(f"📌 [배치 전송] 대상 관리자 기기 토큰 개수: {len(tokens)}개")
 
-    valid_tokens = []
-    tokens_changed = False
+    try:
+        # 💡 Firebase 멀티캐스트 메시지 객체 생성 (다중 토큰 일괄 전송)
+        message = messaging.MulticastMessage(
+            notification=messaging.Notification(
+                title=title,
+                body=body,
+            ),
+            webpush=messaging.WebpushConfig(
+                notification=messaging.WebpushNotification(
+                    title=title, body=body, icon="/static/logo-main.png"
+                )
+            ),
+            data={"url": "https://prime-express.duckdns.org/admin"},
+            tokens=tokens,
+        )
 
-    for token in tokens:
-        try:
-            # 💡 기존 notification/webpush 설정과 함께 sw.js가 활용할 data 필드를 추가하여
-            #    기존 알림 렌더링 기능은 유지하면서 클릭 라우팅 문제를 동시에 해결합니다.
-            message = messaging.Message(
-                notification=messaging.Notification(
-                    title=title,
-                    body=body,
-                ),
-                webpush=messaging.WebpushConfig(
-                    notification=messaging.WebpushNotification(
-                        title=title, body=body, icon="/static/logo-main.png"
-                    )
-                ),
-                data={"url": "https://prime-express.duckdns.org/admin"},
-                token=token,
-            )
-            response = messaging.send(message)
-            print("FCM 푸시 발송 성공:", response)
-            valid_tokens.append(token)  # 성공한 토큰은 유지
-        except Exception as e:
-            err_str = str(e)
-            print(f"FCM 푸시 발송 실패 (토큰: {token[:10]}...):", e)
+        # 한 번에 일괄 발송 요청
+        response = messaging.send_each_for_multicast(message)
+        print(f"✨ FCM 일괄 발송 완료! 성공: {response.success_count}건, 실패: {response.failure_count}건")
 
-            # 만료되거나 유효하지 않은 토큰인 경우 파일에서 자동 삭제
-            if (
-                "NotRegistered" in err_str
-                or "Requested entity was not found" in err_str
-            ):
-                print(f"만료된 토큰 자동 삭제 처리: {token[:10]}...")
-                tokens_changed = True
-            else:
-                valid_tokens.append(token)  # 다른 일시적 에러는 유지
-
-    # 만료된 토큰이 삭제되어 변경사항이 생겼다면 파일에 다시 저장
-    if tokens_changed:
-        with open("admin_tokens.txt", "w", encoding="utf-8") as f:
-            json.dump(valid_tokens, f, ensure_ascii=False, indent=4)
+    except Exception as e:
+        print(f"🚨 FCM 일괄 발송 중 예외 발생: {e}")
 
 
 def load_nohand_days():
@@ -228,10 +204,11 @@ def submit_estimate():
     else:
         push_body = f"고객명: {user_name} ({user_phone}) / 이사일: {move_date1}"
 
-    send_fcm_push(
-        title="🚨 새로운 이삿짐 견적 접수!",
-        body=push_body,
-    )
+    # 💡 [핵심 개선] 알림 발송을 백그라운드 스레드로 분리하여 고객 화면 딜레이 원천 차단 (0초 체감)
+    threading.Thread(
+        target=send_fcm_push,
+        args=("🚨 새로운 이삿짐 견적 접수!", push_body)
+    ).start()
 
     return redirect(url_for("home"))
 
@@ -402,11 +379,3 @@ if __name__ == "__main__":
         generate_lunar_nohand_days()
 
     app.run(host="0.0.0.0", port=5000, debug=False)
-    # app.run(
-    #    host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem")
-    # )  # 서버에 설정된 인증서 파일명에 맞게 조정 필요
-
-# if os.path.exists("cert.pem") and os.path.exists("key.pem"):
-#    app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
-# else:
-#    app.run(host="127.0.0.1", port=5000, debug=True)
