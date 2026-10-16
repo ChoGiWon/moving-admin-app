@@ -49,6 +49,7 @@ def send_fcm_push(title, body):
     견적 요청 1건당 등록된 각 토큰에 정확히 1개씩만 단건 발송하는 함수
     - 최대 5개의 토큰에 대해 1:1 매핑 발송 보장
     """
+    TOKEN_FILE = "admin_tokens.txt"
     if not os.path.exists(TOKEN_FILE):
         print("토큰 파일이 존재하지 않습니다.")
         return
@@ -77,7 +78,6 @@ def send_fcm_push(title, body):
     success_count = 0
     failure_count = 0
 
-    # 💡 핵심: 전체 토큰 리스트를 순회하며 "토큰 1개당 메시지 1개"만 정확히 개별 전송
     for i, token in enumerate(tokens_list):
         try:
             message = messaging.Message(
@@ -91,7 +91,7 @@ def send_fcm_push(title, body):
                     )
                 ),
                 data={"url": "https://prime-express.duckdns.org/admin"},
-                token=token,  # 👈 단일 토큰 지정 (멀티캐스트 아님)
+                token=token,
             )
 
             response = messaging.send(message)
