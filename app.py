@@ -44,11 +44,8 @@ except Exception as e:
     print("Firebase Admin 초기화 경고:", e)
 
 
+# 1. 1:1 단건 발송 함수 (토큰 1개당 메시지 1개씩 순회 전송)
 def send_fcm_push(title, body):
-    """
-    견적 요청 1건당 등록된 각 토큰에 정확히 1개씩만 단건 발송하는 함수
-    - 최대 5개의 토큰에 대해 1:1 매핑 발송 보장
-    """
     TOKEN_FILE = "admin_tokens.txt"
     if not os.path.exists(TOKEN_FILE):
         print("토큰 파일이 존재하지 않습니다.")
@@ -78,6 +75,7 @@ def send_fcm_push(title, body):
     success_count = 0
     failure_count = 0
 
+    # 등록된 토큰을 순회하며 각각 단건(1:1) 발송
     for i, token in enumerate(tokens_list):
         try:
             message = messaging.Message(
@@ -179,7 +177,7 @@ def get_nohand_days():
     return jsonify({"noHandDays": days_list})
 
 
-# --- [견적 제출 및 FCM 푸시 알림 라우트] ---
+# 2. 견적 제출 및 FCM 푸시 알림 라우트
 @app.route("/estimate", methods=["POST"])
 def submit_estimate():
     print("========================================")
@@ -199,7 +197,7 @@ def submit_estimate():
     is_storage = request.form.get("isStorageMove") == "on"
     move_date1 = request.form.get("moveDate1")
     move_date2 = request.form.get("moveDate2", "") if is_storage else ""
-    visit_date = request.form.get("visitDate", "").strip()  # 💡 선택 입력 처리
+    visit_date = request.form.get("visitDate", "").strip()
 
     estimate_data = {
         "userName": user_name,
@@ -208,19 +206,18 @@ def submit_estimate():
         "isStorage": is_storage,
         "moveDate1": move_date1,
         "moveDate2": move_date2,
-        "visitDate": visit_date,  # 💡 빈 값이면 빈 문자열로 저장
+        "visitDate": visit_date,
         "memo": "",
     }
 
     save_estimate(estimate_data)
 
-    # 💡 방문 견적일 유무에 따른 푸시 메시지 동적 구성
     if visit_date:
         push_body = f"고객명: {user_name} ({user_phone}) / 방문견적일: {visit_date} / 이사일: {move_date1}"
     else:
         push_body = f"고객명: {user_name} ({user_phone}) / 이사일: {move_date1}"
 
-    # 💡 [핵심 개선] 알림 발송을 백그라운드 스레드로 분리하여 고객 화면 딜레이 원천 차단 (0초 체감)
+    # 백그라운드 스레드로 1:1 순회 발송 함수 실행
     threading.Thread(
         target=send_fcm_push, args=("🚨 새로운 이삿짐 견적 접수!", push_body)
     ).start()
