@@ -157,8 +157,7 @@
         <div class="form-group">
             <label for="visitDate">관리자 방문 견적 희망일 (선택)</label>
             <input type="date" id="visitDate" name="visitDate">
-            <small class="helper-text" style="color: #666; font-size: 0.8rem; margin-top: 3px;">방문 견적이 필요한 경우에만
-                선택해주세요.</small>
+            <small class="helper-text" style="color: #666; font-size: 0.8rem; margin-top: 3px;">방문 견적이 필요한 경우에만 선택해주세요.</small>
         </div>
 
         <div class="form-group" id="storageDateWrap" style="display: none;">
@@ -710,6 +709,56 @@
 
     </div>
 </section>
+
+<!-- 🚚 [추가] 화면 아래를 귀엽게 왕복하는 이삿짐 트럭 애니메이션 영역 -->
+<style>
+    .cute-truck-bar {
+        position: fixed;
+        bottom: 15px;
+        left: 0;
+        width: 100%;
+        height: 40px;
+        overflow: hidden;
+        pointer-events: none; /* 마우스 클릭을 방해하지 않음 */
+        z-index: 9999;
+    }
+
+    @keyframes driveBackAndForth {
+        0% {
+            transform: translateX(-40px) scaleX(1);
+        }
+        49.9% {
+            transform: translateX(calc(100vw - 60px)) scaleX(1);
+        }
+        50% {
+            transform: translateX(calc(100vw - 60px)) scaleX(-1); /* 반대 방향으로 머리 돌림 */
+        }
+        99.9% {
+            transform: translateX(-40px) scaleX(-1);
+        }
+        100% {
+            transform: translateX(-40px) scaleX(1);
+        }
+    }
+
+    .cute-truck-wrap {
+        display: inline-block;
+        animation: driveBackAndForth 15s linear infinite;
+    }
+
+    .cute-truck-img {
+        width: 28px; /* 손톱 크기 정도의 아담한 사이즈 */
+        height: auto;
+        display: block;
+    }
+</style>
+
+<div class="cute-truck-bar">
+    <div class="cute-truck-wrap">
+        <!-- 💡 static 폴더에 있는 트럭 이미지 파일명을 아래 filename에 지정하세요 (예: truck.png) -->
+        <img src="{{ url_for('static', filename='moving_truck.png') }}" alt="moving_truck" class="cute-truck-img">
+    </div>
+</div>
 
 <!-- 13. 사업자 표시 및 약관 (푸터) -->
 <footer class="footer-area">
