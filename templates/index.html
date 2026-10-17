@@ -3,19 +3,19 @@
 
 {% block content %}
 
-<!-- 상단 헤더 영역 내 블로그 텍스트 추가 (두 번째 캡처 위치) -->
-<!-- 만약 base.html 내부 헤더를 수정해야 한다면 아래 스타일과 태그를 참고해 주세요 -->
+<!-- 상단 헤더 영역 내 블로그 텍스트 추가 (두 번째 캡처 위치 대응) -->
 <style>
-    /* 상단 네비게이션바 커스텀 링크 스타일 */
     .top-blog-link {
-        color: #495057;
+        color: #ff9800; /* 파트너 모집과 어울리는 포인트 컬러 */
         text-decoration: none;
-        font-weight: 600;
+        font-weight: bold;
         font-size: 0.95rem;
-        transition: color 0.2s;
+        margin-left: 12px;
+        margin-right: 12px;
+        transition: opacity 0.2s;
     }
     .top-blog-link:hover {
-        color: #ff9800;
+        opacity: 0.8;
     }
 </style>
 
@@ -390,7 +390,6 @@
         <a href="#partner-intro"
             style="flex: 1; text-align: center; padding: 14px 8px; background: #fff; border: 2px solid #4a6fa5; border-radius: 8px; color: #4a6fa5; font-weight: bold; text-decoration: none; font-size: 0.95rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">🏢
             협력사 소개</a>
-        <!-- 💡 블로그 이동 버튼 추가 (실제 블로그 주소로 변경하세요) -->
         <a href="https://your-blog-url.tistory.com" target="_blank"
             style="flex: 1; text-align: center; padding: 14px 8px; background: #fff; border: 2px solid #28a745; border-radius: 8px; color: #28a745; font-weight: bold; text-decoration: none; font-size: 0.95rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">📝
             공식 블로그</a>
@@ -518,26 +517,29 @@
             </a>
         </div>
 
-        <!-- 협력사 4 -->
-        <div
-            style="display: flex; justify-content: space-between; align-items: center; background: #fafbfc; border: 1px solid #e1e8ed; border-radius: 8px; padding: 18px 20px;">
-            <div style="display: flex; flex-direction: column; gap: 4px;">
-                <div style="font-weight: bold; font-size: 1.1rem; color: #212529;">
-                    경민청소
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-weight: bold; color: #212529; font-size: 0.95rem;">김선진 대표</span>
-                    <span style="color: #6c757d; font-size: 0.95rem;">010-6313-5542</span>
-                </div>
-            </div>
-            <a href="tel:010-6313-5542"
-                style="background-color: #28a745; color: #fff; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(40,167,69,0.2); flex-shrink: 0;">
-                📞
-            </a>
-        </div>
-
     </div>
 </section>
+
+<!-- 상단 네비게이션 바(헤더)에 블로그 링크를 삽입하기 위한 스크립트 (동적 주입) -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // base.html의 상단 서브 헤더나 버전 표시 영역을 찾아 블로그 링크를 자동으로 삽입합니다.
+        const versionEl = document.querySelector('.version-text, [class*="version"]') || document.querySelector('header span, header div');
+        // 혹은 직접 상단 메뉴바 요소를 탐색하여 삽입
+        const targetNav = document.querySelector('header') || document.querySelector('.navbar');
+        if (targetNav && !document.getElementById('injectedTopBlogLink')) {
+            const blogLink = document.createElement('a');
+            blogLink.id = 'injectedTopBlogLink';
+            blogLink.href = 'https://your-blog-url.tistory.com'; // 💡 실제 블로그 주소로 변경하세요
+            blogLink.target = '_blank';
+            blogLink.className = 'top-blog-link';
+            blogLink.innerText = '📝 공식 블로그';
+            
+            // 버전 정보 뒤나 적절한 위치에 삽입
+            targetNav.appendChild(blogLink);
+        }
+    });
+</script>
 
 <!-- 🚚 화면 아래를 왕복하는 이삿짐 트럭 애니메이션 영역 -->
 <style>
