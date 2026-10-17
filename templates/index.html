@@ -212,197 +212,6 @@
     }
 </script>
 
-<!-- 7. LIVE 실시간 신청 현황 위젯 -->
-<section id="reviews-section" class="section process-list">
-    <style>
-        .live-status-card {
-            background: #fff;
-            border: 1px solid #e1e8ed;
-            border-radius: 10px;
-            padding: 20px;
-            max-width: 100%;
-            margin: 0 auto;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            font-family: 'Malgun Gothic', sans-serif;
-        }
-
-        .live-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #f0f2f5;
-            padding-bottom: 10px;
-        }
-
-        .live-title-wrap {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.1rem;
-            color: #333;
-        }
-
-        .live-dot {
-            width: 10px;
-            height: 10px;
-            background-color: #28a745;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 0 rgba(40, 167, 69, 0.4);
-            animation: pulse-live 1.5s infinite;
-        }
-
-        @keyframes pulse-live {
-            0% {
-                transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
-            }
-
-            70% {
-                transform: scale(1);
-                box-shadow: 0 0 0 6px rgba(40, 167, 69, 0);
-            }
-
-            100% {
-                transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
-            }
-        }
-
-        .live-count-badge {
-            font-size: 0.85rem;
-            color: #6c757d;
-            font-weight: bold;
-        }
-
-        .live-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: center;
-        }
-
-        .live-table th {
-            background-color: #f8f9fa;
-            color: #495057;
-            font-size: 0.9rem;
-            padding: 10px;
-            font-weight: bold;
-        }
-
-        .live-table td {
-            padding: 12px 10px;
-            font-size: 0.95rem;
-            color: #333;
-            border-bottom: 1px solid #f1f3f5;
-        }
-
-        .live-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .live-table tr.fade-in {
-            animation: fadeInRow 0.8s ease-in-out;
-        }
-
-        @keyframes fadeInRow {
-            from {
-                opacity: 0;
-                background-color: #e8f4fd;
-                transform: translateY(-5px);
-            }
-
-            to {
-                opacity: 1;
-                background-color: transparent;
-                transform: translateY(0);
-            }
-        }
-    </style>
-
-    <div class="live-status-card">
-        <div class="live-header">
-            <div class="live-title-wrap">
-                <span class="live-dot"></span>
-                <strong>LIVE</strong> 실시간 신청 현황
-            </div>
-            <div class="live-count-badge">최근 5건</div>
-        </div>
-
-        <table class="live-table">
-            <thead>
-                <tr>
-                    <th>접수일</th>
-                    <th>이름</th>
-                    <th>연락처</th>
-                </tr>
-            </thead>
-            <tbody id="liveTableBody"></tbody>
-        </table>
-    </div>
-
-    <script>
-        const liveNamePool = ["김*수", "이*영", "박*진", "정*호", "조*민", "배*우", "윤*서", "최*준", "장*희", "임*우", "한*은", "오*진", "서*현", "신*철", "권*아", "황*준", "안*영", "송*우", "전*정", "고*진", "문*호", "양*서", "손*식", "백*민", "허*원"];
-        const phoneSuffixPool = ["0033", "6034", "0102", "7581", "7779", "4821", "9023", "3312", "5548", "1192", "8824", "3301", "2241", "6789", "4321", "5123", "9988", "4102", "3051", "7742"];
-
-        let liveDataList = [
-            { timeMinutes: 120, name: "손*식", phone: "010-****-0033" },
-            { timeMinutes: 300, name: "정*신", phone: "010-****-6034" },
-            { timeMinutes: 320, name: "김*란", phone: "010-****-0102" },
-            { timeMinutes: 480, name: "김*성", phone: "010-****-7581" },
-            { timeMinutes: 1020, name: "김*주", phone: "010-****-7779" }
-        ];
-
-        function formatLiveTime(minutes) {
-            if (minutes < 1) return "방금 전";
-            if (minutes < 60) return `${minutes}분 전`;
-            const hours = Math.floor(minutes / 60);
-            return `${hours}시간 전`;
-        }
-
-        function renderLiveTable(isNewAdded = false) {
-            const tbody = document.getElementById('liveTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            liveDataList.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                if (isNewAdded && index === 0) tr.classList.add('fade-in');
-                tr.innerHTML = `
-                    <td class="col-time">${formatLiveTime(item.timeMinutes)}</td>
-                    <td class="col-name">${item.name}</td>
-                    <td class="col-phone">${item.phone}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function simulateLiveUpdates() {
-            liveDataList.forEach(item => { item.timeMinutes += Math.floor(Math.random() * 20) + 10; });
-            const activePhones = liveDataList.map(item => item.phone);
-            const activeNames = liveDataList.map(item => item.name);
-
-            let randomName;
-            do { randomName = liveNamePool[Math.floor(Math.random() * liveNamePool.length)]; } while (activeNames.includes(randomName));
-
-            let randomSuffix, randomPhone, attempts = 0;
-            do {
-                randomSuffix = phoneSuffixPool[Math.floor(Math.random() * phoneSuffixPool.length)];
-                randomPhone = `010-****-${randomSuffix}`;
-                attempts++;
-            } while (activePhones.includes(randomPhone) && attempts < 20);
-
-            liveDataList.unshift({ timeMinutes: Math.floor(Math.random() * 30) + 10, name: randomName, phone: randomPhone });
-            if (liveDataList.length > 5) liveDataList.pop();
-            renderLiveTable(true);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderLiveTable(false);
-            setInterval(simulateLiveUpdates, 10000);
-        });
-    </script>
-</section>
-
 <!-- 10. 견적 요청 필요 자료 소개 및 고객 유의사항 -->
 <section class="section notice-box">
     <h3></h3>
@@ -710,7 +519,7 @@
     </div>
 </section>
 
-<!-- 🚚 [추가] 화면 아래를 귀엽게 왕복하는 이삿짐 트럭 애니메이션 영역 -->
+<!-- 🚚 화면 아래를 왕복하는 이삿짐 트럭 애니메이션 영역 -->
 <style>
     .cute-truck-bar {
         position: fixed;
@@ -719,7 +528,7 @@
         width: 100%;
         height: 100px;
         overflow: hidden;
-        pointer-events: none; /* 마우스 클릭을 방해하지 않음 */
+        pointer-events: none;
         z-index: 9999;
     }
 
@@ -728,10 +537,10 @@
             transform: translateX(-40px) scaleX(1);
         }
         49.9% {
-            transform: translateX(calc(100vw - 60px)) scaleX(1);
+            transform: translateX(calc(100vw - 120px)) scaleX(1);
         }
         50% {
-            transform: translateX(calc(100vw - 60px)) scaleX(-1); /* 반대 방향으로 머리 돌림 */
+            transform: translateX(calc(100vw - 120px)) scaleX(-1);
         }
         99.9% {
             transform: translateX(-40px) scaleX(-1);
@@ -747,7 +556,7 @@
     }
 
     .cute-truck-img {
-        width: 100px; /* 손톱 크기 정도의 아담한 사이즈 */
+        width: 100px;
         height: auto;
         display: block;
     }
@@ -755,7 +564,6 @@
 
 <div class="cute-truck-bar">
     <div class="cute-truck-wrap">
-        <!-- 💡 static 폴더에 있는 트럭 이미지 파일명을 아래 filename에 지정하세요 (예: truck.png) -->
         <img src="{{ url_for('static', filename='moving_truck.png') }}" alt="moving_truck" class="cute-truck-img">
     </div>
 </div>
