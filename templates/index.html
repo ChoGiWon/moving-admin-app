@@ -3,16 +3,18 @@
 
 {% block content %}
 
-<!-- 상단 헤더 영역 내 블로그 텍스트 추가 (두 번째 캡처 위치 대응) -->
+<!-- 상단 헤더 영역 내 블로그 텍스트 스타일 -->
 <style>
     .top-blog-link {
-        color: #ff9800; /* 파트너 모집과 어울리는 포인트 컬러 */
+        color: #ff9800; /* 파트너 모집과 동일한 주황색 계열 */
         text-decoration: none;
         font-weight: bold;
-        font-size: 0.95rem;
-        margin-left: 12px;
-        margin-right: 12px;
+        font-size: 0.9rem;
+        margin-right: 10px;
         transition: opacity 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
     }
     .top-blog-link:hover {
         opacity: 0.8;
@@ -520,14 +522,13 @@
     </div>
 </section>
 
-<!-- 상단 네비게이션 바(헤더)에 블로그 링크를 삽입하기 위한 스크립트 (동적 주입) -->
+<!-- 💡 [수정] 분홍색 띠 바 내부의 '🤝 파트너 모집' 텍스트 바로 왼쪽에 정확히 '📝 공식 블로그' 삽입 -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // base.html의 상단 서브 헤더나 버전 표시 영역을 찾아 블로그 링크를 자동으로 삽입합니다.
-        const versionEl = document.querySelector('.version-text, [class*="version"]') || document.querySelector('header span, header div');
-        // 혹은 직접 상단 메뉴바 요소를 탐색하여 삽입
-        const targetNav = document.querySelector('header') || document.querySelector('.navbar');
-        if (targetNav && !document.getElementById('injectedTopBlogLink')) {
+        // 분홍색 띠 바 내부의 '파트너 모집' 링크 요소를 정확히 탐색
+        const partnerLink = Array.from(document.querySelectorAll('a')).find(el => el.textContent.includes('파트너 모집'));
+        
+        if (partnerLink && partnerLink.parentNode && !document.getElementById('injectedTopBlogLink')) {
             const blogLink = document.createElement('a');
             blogLink.id = 'injectedTopBlogLink';
             blogLink.href = 'https://your-blog-url.tistory.com'; // 💡 실제 블로그 주소로 변경하세요
@@ -535,8 +536,8 @@
             blogLink.className = 'top-blog-link';
             blogLink.innerText = '📝 공식 블로그';
             
-            // 버전 정보 뒤나 적절한 위치에 삽입
-            targetNav.appendChild(blogLink);
+            // '파트너 모집' 링크 바로 앞(왼쪽)에 삽입
+            partnerLink.parentNode.insertBefore(blogLink, partnerLink);
         }
     });
 </script>
