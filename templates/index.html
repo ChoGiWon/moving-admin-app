@@ -3,6 +3,22 @@
 
 {% block content %}
 
+<!-- 상단 헤더 영역 내 블로그 텍스트 추가 (두 번째 캡처 위치) -->
+<!-- 만약 base.html 내부 헤더를 수정해야 한다면 아래 스타일과 태그를 참고해 주세요 -->
+<style>
+    /* 상단 네비게이션바 커스텀 링크 스타일 */
+    .top-blog-link {
+        color: #495057;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: color 0.2s;
+    }
+    .top-blog-link:hover {
+        color: #ff9800;
+    }
+</style>
+
 <!-- 5. 회사 소개 (10장 사진 2초 간격 순차 전환 및 고정 텍스트 오버레이) -->
 <section class="section company-intro">
     <style>
@@ -365,15 +381,19 @@
     });
 </script>
 
-<!-- 파트너 및 협력사 빠른 이동 버튼 영역 (좌측: 파트너 모집 / 우측: 협력사 소개) -->
+<!-- 파트너, 협력사 및 블로그 빠른 이동 버튼 영역 (첫 번째 캡처 위치) -->
 <div style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
-    <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between;">
+    <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
         <a href="#partner-recruit"
-            style="flex: 1; text-align: center; padding: 14px 10px; background: #fff; border: 2px solid #ff9800; border-radius: 8px; color: #ff9800; font-weight: bold; text-decoration: none; font-size: 1.05rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">🤝
+            style="flex: 1; text-align: center; padding: 14px 8px; background: #fff; border: 2px solid #ff9800; border-radius: 8px; color: #ff9800; font-weight: bold; text-decoration: none; font-size: 0.95rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">🤝
             파트너 모집</a>
         <a href="#partner-intro"
-            style="flex: 1; text-align: center; padding: 14px 10px; background: #fff; border: 2px solid #4a6fa5; border-radius: 8px; color: #4a6fa5; font-weight: bold; text-decoration: none; font-size: 1.05rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">🏢
+            style="flex: 1; text-align: center; padding: 14px 8px; background: #fff; border: 2px solid #4a6fa5; border-radius: 8px; color: #4a6fa5; font-weight: bold; text-decoration: none; font-size: 0.95rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">🏢
             협력사 소개</a>
+        <!-- 💡 블로그 이동 버튼 추가 (실제 블로그 주소로 변경하세요) -->
+        <a href="https://your-blog-url.tistory.com" target="_blank"
+            style="flex: 1; text-align: center; padding: 14px 8px; background: #fff; border: 2px solid #28a745; border-radius: 8px; color: #28a745; font-weight: bold; text-decoration: none; font-size: 0.95rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">📝
+            공식 블로그</a>
     </div>
 </div>
 
