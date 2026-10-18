@@ -522,26 +522,6 @@
     </div>
 </section>
 
-<!-- 💡 [수정] 분홍색 띠 바 내부의 '🤝 파트너 모집' 텍스트 바로 왼쪽에 정확히 '📝 공식 블로그' 삽입 -->
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // 분홍색 띠 바 내부의 '파트너 모집' 링크 요소를 정확히 탐색
-        const partnerLink = Array.from(document.querySelectorAll('a')).find(el => el.textContent.includes('파트너 모집'));
-        
-        if (partnerLink && partnerLink.parentNode && !document.getElementById('injectedTopBlogLink')) {
-            const blogLink = document.createElement('a');
-            blogLink.id = 'injectedTopBlogLink';
-            blogLink.href = 'https://your-blog-url.tistory.com'; // 💡 실제 블로그 주소로 변경하세요
-            blogLink.target = '_blank';
-            blogLink.className = 'top-blog-link';
-            blogLink.innerText = '📝 공식 블로그';
-            
-            // '파트너 모집' 링크 바로 앞(왼쪽)에 삽입
-            partnerLink.parentNode.insertBefore(blogLink, partnerLink);
-        }
-    });
-</script>
-
 <!-- 🚚 화면 아래를 왕복하는 이삿짐 트럭 애니메이션 영역 -->
 <style>
     .cute-truck-bar {
