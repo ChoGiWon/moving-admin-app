@@ -109,13 +109,51 @@
             color: #555;
         }
 
-        .form-row input, .form-row textarea {
+        .form-row input[type="text"], .form-row textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ced4da;
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 1rem;
+        }
+
+        /* 💡 사진 선택 버튼 그룹 스타일 */
+        .photo-action-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .photo-action-btn {
+            flex: 1;
+            padding: 12px 10px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: opacity 0.2s;
+        }
+
+        .btn-camera {
+            background: #17a2b8;
+            color: #fff;
+        }
+
+        .btn-gallery {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .photo-action-btn:hover {
+            opacity: 0.9;
         }
 
         .add-btn, .submit-btn {
@@ -147,13 +185,13 @@
         .preview-thumbs {
             display: flex;
             gap: 8px;
-            margin-top: 8px;
+            margin-top: 10px;
             flex-wrap: wrap;
         }
 
         .preview-thumbs img {
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
             object-fit: cover;
             border-radius: 4px;
             border: 1px solid #ddd;
@@ -163,7 +201,7 @@
 
 <body>
     <div class="admin-container">
-        <!-- 상단 내비게이션 영역 (관리자 메인 및 로그아웃 버튼 우측 정렬) -->
+        <!-- 상단 내비게이션 영역 -->
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
             <a href="/" class="home-link" style="margin-bottom: 0; padding-top: 5px;">&lsaquo; 홈페이지로 돌아가기</a>
             
@@ -201,10 +239,22 @@
                             <textarea name="content" rows="3" required>{{ review.content }}</textarea>
                         </div>
                         <div class="form-row">
-                            <label>사진 추가 (PC: 파일선택 / 모바일: 사진첩·카메라)</label>
-                            <!-- 💡 capture 속성을 제거하여 사진첩 / 카메라 선택창이 떠오르도록 수정 -->
-                            <input type="file" name="images_{{ loop.index0 }}" accept="image/*" multiple>
-                            <div class="preview-thumbs">
+                            <label>사진 등록</label>
+                            <!-- 숨겨진 실제 파일 인풋 (카메라 전용 / 갤러리 전용 분리) -->
+                            <input type="file" id="fileInput_camera_{{ loop.index0 }}" name="images_{{ loop.index0 }}" accept="image/*" capture="environment" style="display: none;" onchange="previewImages(this, {{ loop.index0 }})">
+                            <input type="file" id="fileInput_gallery_{{ loop.index0 }}" name="images_{{ loop.index0 }}" accept="image/*" multiple style="display: none;" onchange="previewImages(this, {{ loop.index0 }})">
+                            
+                            <!-- 사용자가 누를 직관적인 버튼 2개 -->
+                            <div class="photo-action-group">
+                                <button type="button" class="photo-action-btn btn-camera" onclick="document.getElementById('fileInput_camera_{{ loop.index0 }}').click()">
+                                    📷 사진 촬영하기
+                                </button>
+                                <button type="button" class="photo-action-btn btn-gallery" onclick="document.getElementById('fileInput_gallery_{{ loop.index0 }}').click()">
+                                    📁 사진첩에서 선택
+                                </button>
+                            </div>
+
+                            <div class="preview-thumbs" id="preview_{{ loop.index0 }}">
                                 {% for img in review.images %}
                                 <img src="{{ img }}" alt="등록된 사진">
                                 {% endfor %}
@@ -229,9 +279,20 @@
                             <textarea name="content" rows="3" required></textarea>
                         </div>
                         <div class="form-row">
-                            <label>사진 추가 (PC: 파일선택 / 모바일: 사진첩·카메라)</label>
-                            <!-- 💡 capture 속성을 제거하여 사진첩 / 카메라 선택창이 떠오르도록 수정 -->
-                            <input type="file" name="images_0" accept="image/*" multiple>
+                            <label>사진 등록</label>
+                            <input type="file" id="fileInput_camera_0" name="images_0" accept="image/*" capture="environment" style="display: none;" onchange="previewImages(this, 0)">
+                            <input type="file" id="fileInput_gallery_0" name="images_0" accept="image/*" multiple style="display: none;" onchange="previewImages(this, 0)">
+                            
+                            <div class="photo-action-group">
+                                <button type="button" class="photo-action-btn btn-camera" onclick="document.getElementById('fileInput_camera_0').click()">
+                                    📷 사진 촬영하기
+                                </button>
+                                <button type="button" class="photo-action-btn btn-gallery" onclick="document.getElementById('fileInput_gallery_0').click()">
+                                    📁 사진첩에서 선택
+                                </button>
+                            </div>
+
+                            <div class="preview-thumbs" id="preview_0"></div>
                         </div>
                     </div>
                 {% endif %}
@@ -264,12 +325,41 @@
                     <textarea name="content" rows="3" required></textarea>
                 </div>
                 <div class="form-row">
-                    <label>사진 추가 (PC: 파일선택 / 모바일: 사진첩·카메라)</label>
-                    <input type="file" name="images_${itemCount}" accept="image/*" multiple>
+                    <label>사진 등록</label>
+                    <input type="file" id="fileInput_camera_${itemCount}" name="images_${itemCount}" accept="image/*" capture="environment" style="display: none;" onchange="previewImages(this, ${itemCount})">
+                    <input type="file" id="fileInput_gallery_${itemCount}" name="images_${itemCount}" accept="image/*" multiple style="display: none;" onchange="previewImages(this, ${itemCount})">
+                    
+                    <div class="photo-action-group">
+                        <button type="button" class="photo-action-btn btn-camera" onclick="document.getElementById('fileInput_camera_${itemCount}').click()">
+                            📷 사진 촬영하기
+                        </button>
+                        <button type="button" class="photo-action-btn btn-gallery" onclick="document.getElementById('fileInput_gallery_${itemCount}').click()">
+                            📁 사진첩에서 선택
+                        </button>
+                    </div>
+
+                    <div class="preview-thumbs" id="preview_${itemCount}"></div>
                 </div>
             `;
             container.appendChild(div);
             itemCount++;
+        }
+
+        // 선택한 사진 미리보기 기능
+        function previewImages(input, index) {
+            const previewContainer = document.getElementById(`preview_${index}`);
+            // 새로 선택한 파일들로 미리보기 갱신
+            if (input.files && input.files.length > 0) {
+                for (let i = 0; i < input.files.length; i++) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        previewContainer.appendChild(img);
+                    }
+                    reader.readAsDataURL(input.files[i]);
+                }
+            }
         }
     </script>
 </body>
