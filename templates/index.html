@@ -480,15 +480,24 @@
     let currentYear = 2026;
     let currentMonth = 9;
     let noHandDaysSet = new Set();
+    let holidaySet = new Set(); // 💡 공휴일 데이터 저장용 Set 추가
 
-    async function initNoHandDays() {
+    // 💡 손없는 날 및 공휴일 데이터를 서버에서 함께 로드하는 비동기 함수
+    async function initCalendarData() {
         try {
-            const response = await fetch('/api/nohand-days');
-            const data = await response.json();
-            noHandDaysSet = new Set(data.noHandDays);
+            // 1. 손없는 날 데이터 로드
+            const noHandRes = await fetch('/api/nohand-days');
+            const noHandData = await noHandRes.json();
+            noHandDaysSet = new Set(noHandData.noHandDays || []);
+
+            // 2. 공휴일 데이터 로드
+            const holidayRes = await fetch('/api/holidays');
+            const holidayData = await holidayRes.json();
+            holidaySet = new Set(holidayData.holidays || []);
+
             renderCalendar();
         } catch (e) {
-            console.error("손없는 날 데이터 로드 실패:", e);
+            console.error("달력 데이터 로드 실패:", e);
             renderCalendar();
         }
     }
@@ -539,8 +548,8 @@
                     if (j === 0) cell.classList.add('sun');
                     if (j === 6) cell.classList.add('sat');
 
-                    // 💡 2. 공휴일(holiday) 데이터가 있을 경우 일요일과 동일하게 빨간색 처리 연동
-                    if (typeof holidaySet !== 'undefined' && holidaySet.has(dateStr)) {
+                    // 💡 2. 대한민국 공휴일(holiday) 빨간색 처리 연동
+                    if (holidaySet.has(dateStr)) {
                         cell.classList.add('holiday');
                     }
 
@@ -571,7 +580,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         displayToday();
-        initNoHandDays();
+        initCalendarData(); // 💡 변경된 로드 함수 호출
     });
 </script>
 

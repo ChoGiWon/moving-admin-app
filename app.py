@@ -31,6 +31,7 @@ app.config["SESSION_PERMANENT"] = False  # 세션을 영구 보관하지 않음
 app.secret_key = "prime_moving_admin_secure_secret_key_2026"  # 👈 고정 키
 
 DATA_FILE = "nohand_days.txt"
+HOLIDAY_FILE = "holidays.txt"  # 👈 공휴일 파일 상수 추가
 ESTIMATE_FILE = "estimates.txt"
 ADMIN_PASSWORD = "admin1234"  # 관리자 비밀번호
 TIMEOUT_SECONDS = 300  # 5분 (300초 동안 활동 없으면 완전 로그아웃)
@@ -120,6 +121,17 @@ def load_nohand_days():
     return []
 
 
+# 💡 공휴일 파일(.txt)을 읽어오는 함수 추가
+def load_holidays():
+    if os.path.exists(HOLIDAY_FILE):
+        try:
+            with open(HOLIDAY_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print("공휴일 파일 읽기 에러:", e)
+    return []
+
+
 def load_estimates():
     if os.path.exists(ESTIMATE_FILE):
         try:
@@ -197,6 +209,13 @@ def home():
 def get_nohand_days():
     days_list = load_nohand_days()
     return jsonify({"noHandDays": days_list})
+
+
+# 💡 공휴일 데이터를 클라이언트에 전달하는 API 라우트 추가
+@app.route("/api/holidays")
+def get_holidays():
+    holidays_list = load_holidays()
+    return jsonify({"holidays": holidays_list})
 
 
 # 2. 견적 제출 및 FCM 푸시 알림 라우트
@@ -491,9 +510,12 @@ def admin_delete(est_id):
 
 
 if __name__ == "__main__":
-    if not os.path.exists(DATA_FILE):
-        from generate_data import generate_lunar_nohand_days
-
-        generate_lunar_nohand_days()
+    # 💡 손없는 날 또는 공휴일 파일이 없으면 자동 생성
+    if not os.path.exists(DATA_FILE) or not os.path.exists(HOLIDAY_FILE):
+        from generate_data import generate_lunar_nohand_days, generate_holidays
+        if not os.path.exists(DATA_FILE):
+            generate_lunar_nohand_days()
+        if not os.path.exists(HOLIDAY_FILE):
+            generate_holidays()
 
     app.run(host="0.0.0.0", port=5000, debug=False)

@@ -700,10 +700,6 @@ body {
     /* 명암 톤 */
 }
 
-/*.calendar-table td.no-hand-day .day-number {
-/*    color: #d9480f;
-/*}
-
 /* 3-2) 학군이사 기간: 숫자 아래 범위 바/화살표 표시 */
 .school-range-bar {
     position: absolute;
