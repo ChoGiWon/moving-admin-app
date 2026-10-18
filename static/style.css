@@ -630,9 +630,9 @@ body {
 .calendar-table td.sat .day-number { color: #1971c2; }
 
 /* 3-1) 손없는 날: 칸 색상 명암 강조 */
-.calendar-table td.no-hand-day {
-    background-color: #fff4e6; /* 명암 톤 */
-}
+/*.calendar-table td.no-hand-day {
+/*    background-color: #fff4e6; /* 명암 톤 */
+/*}
 
 .calendar-table td.no-hand-day .day-number {
     color: #d9480f;
