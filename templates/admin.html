@@ -37,17 +37,35 @@
             margin: 0;
         }
 
-        /* 💡 이사 후기 관리 이동 버튼 스타일 추가 */
+        /* 💡 세련된 동일 규격 우측 버튼 스타일 추가 */
+        .admin-nav-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .review-manage-btn, .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 135px; /* 두 버튼 동일 너비 고정 */
+            padding: 8px 0;
+            border-radius: 20px; /* 라운드 알약 형태 */
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
         .review-manage-btn {
             background: #ff9800;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin-right: 8px;
-            transition: background 0.2s;
+            color: #ffffff;
+            border: 1px solid #e68900;
+            margin-right: 0;
         }
 
         .review-manage-btn:hover {
@@ -56,12 +74,8 @@
 
         .logout-btn {
             background: #dc3545;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: bold;
+            color: #ffffff;
+            border: 1px solid #c82333;
         }
 
         .logout-btn:hover {
@@ -224,11 +238,12 @@
 <body>
     <div class="admin-container">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-            <a href="/" class="home-link" style="margin-bottom: 0;">&lsaquo; 홈페이지로 돌아가기</a>
-            <!-- 💡 모바일 화면에서 버튼들이 겹치지 않도록 세로(종) 방향으로 정렬 -->
-            <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+            <a href="/" class="home-link" style="margin-bottom: 0; padding-top: 5px;">&lsaquo; 홈페이지로 돌아가기</a>
+            
+            <!-- 💡 동일한 너비와 정밀한 우측 끝맞춤 버튼 그룹 -->
+            <div class="admin-nav-btn-group">
                 <a href="/admin/reviews" class="review-manage-btn">📝 이사 후기 관리</a>
-                <a href="/admin/logout" class="logout-btn">로그아웃</a>
+                <a href="/admin/logout" class="logout-btn">🔒 로그아웃</a>
             </div>
         </div>
 
