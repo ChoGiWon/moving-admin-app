@@ -392,7 +392,9 @@ def admin_reviews_edit(rev_id):
         target_review["title"] = request.form.get("title", "").strip()
         target_review["content"] = request.form.get("content", "").strip()
         try:
-            target_review["rating"] = int(request.form.get("rating", 5))  # 💡 수정 시 별점 반영
+            target_review["rating"] = int(
+                request.form.get("rating", 5)
+            )  # 💡 수정 시 별점 반영
         except:
             target_review["rating"] = 5
 
@@ -427,7 +429,7 @@ def admin_reviews_delete_image():
         return jsonify({"success": False, "message": "권한이 없습니다."})
 
     session["last_activity"] = time.time()
-    
+
     data = request.get_json() or {}
     review_id = data.get("review_id")
     img_url = data.get("img_url", "").strip()
@@ -456,6 +458,7 @@ def admin_reviews_delete_image():
             return jsonify({"success": True})
 
     return jsonify({"success": False, "message": "사진을 찾을 수 없습니다."})
+
 
 @app.route("/admin/update/<int:est_id>", methods=["POST"])
 def admin_update(est_id):
@@ -591,6 +594,18 @@ def admin_delete(est_id):
         json.dump(clean_estimates, f, ensure_ascii=False, indent=4)
 
     return jsonify({"success": True})
+
+
+# 💡 이용약관 페이지 라우트
+@app.route("/terms")
+def terms():
+    return render_template("terms.html")
+
+
+# 💡 개인정보처리방침 페이지 라우트
+@app.route("/privacy")
+def privacy():
+    return render_template("privacy.html")
 
 
 if __name__ == "__main__":
