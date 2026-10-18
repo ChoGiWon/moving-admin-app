@@ -14,13 +14,16 @@
             padding: 20px;
         }
 
+        /* 💡 갤럭시 탭 및 PC 화면에서 넓게 활용할 수 있도록 max-width를 1000px로 확장 */
         .admin-container {
-            max-width: 950px;
+            width: 100%;
+            max-width: 1000px;
             margin: 0 auto;
             background: #fff;
             padding: 25px;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
         }
 
         .header-wrap {
@@ -37,7 +40,7 @@
             margin: 0;
         }
 
-        /* 💡 세련된 동일 규격 우측 버튼 스타일 추가 */
+        /* 세련된 동일 규격 우측 버튼 스타일 추가 */
         .admin-nav-btn-group {
             display: flex;
             flex-direction: column;
@@ -52,10 +55,8 @@
             align-items: center;
             justify-content: center;
             width: 135px;
-            /* 두 버튼 동일 너비 고정 */
             padding: 8px 0;
             border-radius: 20px;
-            /* 라운드 알약 형태 */
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: bold;
@@ -246,6 +247,16 @@
             text-decoration: none;
             font-weight: bold;
         }
+
+        /* 💡 스마트폰 화면(768px 이하) 패딩 최적화 미디어쿼리 */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .admin-container {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 
@@ -254,10 +265,10 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
             <a href="/" class="home-link" style="margin-bottom: 0; padding-top: 5px;">&lsaquo; 홈페이지로 돌아가기</a>
 
-            <!-- 💡 동일한 너비와 정밀한 우측 끝맞춤 버튼 그룹 -->
+            <!-- 동일한 너비와 정밀한 우측 끝맞춤 버튼 그룹 -->
             <div class="admin-nav-btn-group">
                 <a href="/admin/reviews" class="review-manage-btn">📝 이사 후기 관리</a>
-                <!-- 💡 iloveimg 정확한 한국어 주소 연결 및 모바일 외부 브라우저 강제 오픈 스크립트 적용 -->
+                <!-- iloveimg 정확한 한국어 주소 연결 및 모바일 외부 브라우저 강제 오픈 스크립트 적용 -->
                 <a href="https://www.iloveimg.com/ko" target="_blank" rel="noopener noreferrer"
                     class="external-link-btn" onclick="openExternalBrowser(event, 'https://www.iloveimg.com/ko')">
                     🔗 iloveimg 열기
@@ -324,7 +335,7 @@
                             placeholder="도착지 주소 입력 (선택)">{{ est.arrival }}</textarea>
                     </div>
 
-                    <!-- 💡 관리자 방문 견적일 필드 -->
+                    <!-- 관리자 방문 견적일 필드 -->
                     <div class="form-group">
                         <label>관리자 방문 견적일 (선택)</label>
                         <input type="date" name="visitDate" value="{{ est.visitDate }}">
@@ -392,19 +403,17 @@
     </div>
 
     <script>
-        // 💡 모바일 환경에서 인앱 웹뷰 대신 기본 브라우저 앱(크롬/사파리)으로 열리도록 유도하는 함수
+        // 모바일 환경에서 인앱 웹뷰 대신 기본 브라우저 앱(크롬/사파리)으로 열리도록 유도하는 함수
         function openExternalBrowser(event, url) {
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            // 안드로이드 인앱 브라우저 감지 시 intent 스킴 활용
             if (/android/i.test(userAgent)) {
                 event.preventDefault();
                 const cleanUrl = url.replace('https://', '').replace('http://', '');
                 window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end;`;
             }
-            // iOS 또는 일반 PC/모바일은 기본 target="_blank" 동작 유지
         }
 
-        // 💡 오늘 이전 날짜 선택 방지 (페이지 로드 시 모든 date input에 min 속성 자동 부여)
+        // 오늘 이전 날짜 선택 방지
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
             document.querySelectorAll('input[type="date"]').forEach(input => {
@@ -418,7 +427,6 @@
             textarea.style.height = textarea.scrollHeight + 'px';
         }
 
-        // 페이지 로드 시 및 입력 시 자동 조절 적용
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('textarea.auto-resize').forEach(textarea => {
                 autoResizeTextarea(textarea);
@@ -480,7 +488,6 @@
                 formattedAddress = `출발지: ${parts[0].trim()}\n도착지: ${parts[1].trim()}`;
             }
 
-            // 방문 견적일이 있을 때만 문자 템플릿에 포함
             const visitDateLine = visitDate ? `■ 방문 견적일: ${visitDate}\n` : '';
 
             const message = `[청년이사 프라임 익스프레스] 견적 내용 확인\n\n` +

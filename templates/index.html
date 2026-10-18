@@ -35,6 +35,9 @@
             align-items: flex-start;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid #e2e8f0;
+            max-width: 1000px; /* 💡 태블릿 및 PC 화면 최대 폭 최적화 */
+            margin: 0 auto;
+            box-sizing: border-box;
         }
 
         .intro-slider-bg {
@@ -142,7 +145,7 @@
 </section>
 
 <!-- 6. 견적 요청 최소 신청 접수 항목 (보관이사 포함) -->
-<section id="estimate-section" class="section estimate-quick">
+<section id="estimate-section" class="section estimate-quick" style="max-width: 1000px; margin: 0 auto; box-sizing: border-box;">
     <h3 class="section-title">견적 요청</h3>
     <form action="/estimate" method="POST" class="estimate-form" onsubmit="handleEstimateSubmit(this)">
         <div class="form-group">
@@ -231,7 +234,7 @@
 </script>
 
 <!-- 7. 생생 이사 현황 / 고객 후기 위젯 (요청하신 위치) -->
-<section id="reviews-section" class="section review-widget-section">
+<section id="reviews-section" class="section review-widget-section" style="max-width: 1000px; margin: 0 auto; box-sizing: border-box;">
     <style>
         .review-section-title {
             text-align: center;
@@ -244,7 +247,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            max-width: 1200px;
+            width: 100%;
             margin: 0 auto;
         }
         .review-card {
@@ -396,7 +399,7 @@
 </section>
 
 <!-- 11. 달력 섹션 -->
-<section id="calendar-section" class="section calendar-section">
+<section id="calendar-section" class="section calendar-section" style="max-width: 1000px; margin: 0 auto; box-sizing: border-box;">
     <h3 class="section-title">이사 달력</h3>
 
     <div id="todayDisplay" class="calendar-today-banner">오늘 날짜: 로딩 중...</div>
@@ -542,8 +545,8 @@
     });
 </script>
 
-<!-- 파트너, 협력사 및 블로그 빠른 이동 버튼 영역 (첫 번째 캡처 위치) -->
-<div style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
+<!-- 파트너, 협력사 및 블로그 빠른 이동 버튼 영역 -->
+<div style="max-width: 1000px; margin: 30px auto; padding: 0 20px; box-sizing: border-box;">
     <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
         <a href="#partner-recruit"
             style="flex: 1; text-align: center; padding: 14px 8px; background: #fff; border: 2px solid #ff9800; border-radius: 8px; color: #ff9800; font-weight: bold; text-decoration: none; font-size: 0.95rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">🤝
@@ -558,7 +561,7 @@
 </div>
 
 <!-- 12. 가입 증명서 소개 -->
-<section id="certificate-section" class="section cert-section">
+<section id="certificate-section" class="section cert-section" style="max-width: 1000px; margin: 0 auto; box-sizing: border-box;">
     <h3>가입 증명서 소개</h3>
     <p>보험 가입 증명서 / 여성기업 확인서</p>
 
@@ -604,7 +607,7 @@
 
 <!-- 파트너 모집 상세 내용 섹션 -->
 <section id="partner-recruit" class="section"
-    style="background: #fff; border-radius: 12px; padding: 40px 30px; margin: 30px auto; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    style="background: #fff; border-radius: 12px; padding: 40px 30px; margin: 30px auto; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 1000px; box-sizing: border-box;">
     <h3
         style="font-size: 1.5rem; color: #1a1a1a; margin-bottom: 20px; font-weight: bold; border-left: 5px solid #ff9800; padding-left: 12px;">
         🤝 파트너 모집</h3>
@@ -619,7 +622,7 @@
 
 <!-- 협력사 소개 및 전화 연결 섹션 -->
 <section id="partner-intro" class="section"
-    style="background: #fff; border-radius: 12px; padding: 40px 30px; margin: 30px auto; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    style="background: #fff; border-radius: 12px; padding: 40px 30px; margin: 30px auto; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 1000px; box-sizing: border-box;">
     <h3
         style="font-size: 1.5rem; color: #1a1a1a; margin-bottom: 20px; font-weight: bold; border-left: 5px solid #4a6fa5; padding-left: 12px;">
         🏢 협력 업체</h3>

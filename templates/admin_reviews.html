@@ -14,13 +14,16 @@
             padding: 20px;
         }
 
+        /* 💡 갤럭시 탭 및 PC 화면에서 넓게 활용할 수 있도록 max-width를 1000px로 확장 */
         .admin-container {
-            max-width: 950px;
+            width: 100%;
+            max-width: 1000px;
             margin: 0 auto;
             background: #fff;
             padding: 25px;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
         }
 
         .header-wrap {
@@ -180,6 +183,16 @@
             border-radius: 4px;
             border: 1px solid #ddd;
         }
+
+        /* 💡 스마트폰 화면(768px 이하) 패딩 최적화 미디어쿼리 */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .admin-container {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 
@@ -191,7 +204,7 @@
             
             <div class="admin-nav-btn-group">
                 <a href="/admin" class="top-action-btn back-admin-btn">📋 관리자 메인</a>
-                <!-- 💡 iloveimg 외부 브라우저 연결 버튼 추가 -->
+                <!-- iloveimg 외부 브라우저 연결 버튼 추가 -->
                 <a href="https://www.iloveimg.com/ko" target="_blank" rel="noopener noreferrer"
                     class="external-link-btn" onclick="openExternalBrowser(event, 'https://www.iloveimg.com/ko')">
                     🔗 iloveimg 열기
@@ -229,7 +242,7 @@
                         </div>
                         <div class="form-row">
                             <label>사진 파일 선택 (PC/사진첩)</label>
-                            <!-- 💡 capture 속성을 완전히 제거하여 카메라 직행 방지 -->
+                            <!-- capture 속성을 완전히 제거하여 카메라 직행 방지 -->
                             <input type="file" name="images_{{ loop.index0 }}" accept="image/*" multiple onchange="previewImages(this, {{ loop.index0 }})">
                             
                             <div class="preview-thumbs" id="preview_{{ loop.index0 }}">
@@ -270,7 +283,7 @@
     </div>
 
     <script>
-        // 💡 모바일 환경에서 인앱 웹뷰 대신 기본 브라우저 앱으로 열리도록 유도하는 함수
+        // 모바일 환경에서 인앱 웹뷰 대신 기본 브라우저 앱으로 열리도록 유도하는 함수
         function openExternalBrowser(event, url) {
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
             if (/android/i.test(userAgent)) {
