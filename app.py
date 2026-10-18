@@ -300,7 +300,7 @@ def admin_page():
     return render_template("admin.html", estimates=estimates)
 
 
-# 관리자 - 이사 후기 관리 페이지 라우트 (기존 사진 개별 삭제 로직 반영)
+# 관리자 - 이사 후기 관리 페이지 라우트 (사진 다중 선택 삭제 로직 완벽 연동)
 @app.route("/admin/reviews", methods=["GET", "POST"])
 def admin_reviews():
     if not session.get("admin_logged_in"):
@@ -320,7 +320,7 @@ def admin_reviews():
             review_id = i + 1
             review_images = []
 
-            # 💡 기존 이미지가 있다면 유지하되, 체크된 이미지는 서버와 데이터에서 삭제
+            # 💡 기존 이미지가 있다면 유지하되, 체크된 여러 장의 사진을 완벽하게 필터링 및 실제 파일 삭제
             if i < len(existing_reviews):
                 old_images = existing_reviews[i].get("images", [])
                 delete_target_images = request.form.getlist(f"delete_images_{i}")
