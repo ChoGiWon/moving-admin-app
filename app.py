@@ -324,7 +324,7 @@ def admin_reviews():
             if i < len(existing_reviews):
                 old_images = existing_reviews[i].get("images", [])
                 delete_target_images = request.form.getlist(f"delete_images_{i}")
-                
+
                 for img_url in old_images:
                     if img_url in delete_target_images:
                         try:
@@ -374,7 +374,7 @@ def admin_reviews_edit(rev_id):
 
     session["last_activity"] = time.time()
     reviews = load_reviews()
-    
+
     target_review = next((r for r in reviews if r.get("id") == rev_id), None)
     if not target_review:
         return redirect(url_for("admin_reviews"))
@@ -383,7 +383,7 @@ def admin_reviews_edit(rev_id):
         target_review["region"] = request.form.get("region", "").strip()
         target_review["title"] = request.form.get("title", "").strip()
         target_review["content"] = request.form.get("content", "").strip()
-        
+
         save_reviews(reviews)
         return redirect(url_for("admin_reviews"))
 
@@ -397,15 +397,51 @@ def admin_reviews_delete(rev_id):
         return redirect(url_for("admin_login"))
 
     session["last_activity"] = time.time()
-    
+
     reviews = load_reviews()
     reviews = [r for r in reviews if r.get("id") != rev_id]
-    
+
     for idx, r in enumerate(reviews):
         r["id"] = idx + 1
-        
+
     save_reviews(reviews)
     return redirect(url_for("admin_reviews"))
+
+
+# 💡 관리자 - 이사 후기 내 특정 사진 개별 삭제 라우트 (비동기 처리)
+@app.route("/admin/reviews/delete-image", methods=["POST"])
+def admin_review_delete_image():
+    if not session.get("admin_logged_in"):
+        return jsonify({"success": False, "message": "권한이 없습니다."})
+
+    data = request.get_json() or {}
+    review_id = data.get("review_id")
+    img_url = data.get("img_url")
+
+    if not review_id or not img_url:
+        return jsonify({"success": False, "message": "잘못된 요청입니다."})
+
+    reviews = load_reviews()
+    target_review = next((r for r in reviews if r.get("id") == review_id), None)
+
+    if target_review and "images" in target_review:
+        if img_url in target_review["images"]:
+            # 데이터 목록에서 제거
+            target_review["images"].remove(img_url)
+            save_reviews(reviews)
+
+            # 서버 파일 시스템에서 실제 파일 삭제
+            try:
+                relative_path = img_url.lstrip("/")
+                file_path = os.path.join(app.root_path, relative_path)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+            except Exception as e:
+                print("사진 파일 실제 삭제 에러:", e)
+
+            return jsonify({"success": True})
+
+    return jsonify({"success": False, "message": "사진을 찾을 수 없습니다."})
 
 
 @app.route("/admin/update/<int:est_id>", methods=["POST"])
@@ -429,14 +465,10 @@ def admin_update(est_id):
                 )
             else:
                 address = request.form.get("userAddress", est["userAddress"])
-                est["userAddress"] = address.replace("\r\n", " / ").replace(
-                    "\n", " / "
-                )
+                est["userAddress"] = address.replace("\r\n", " / ").replace("\n", " / ")
 
             est["moveDate1"] = request.form.get("moveDate1", est["moveDate1"])
-            est["visitDate"] = request.form.get(
-                "visitDate", ""
-            ).strip()
+            est["visitDate"] = request.form.get("visitDate", "").strip()
 
             is_storage_val = request.form.get("isStorage") == "on"
             est["isStorage"] = is_storage_val
@@ -551,6 +583,7 @@ def admin_delete(est_id):
 if __name__ == "__main__":
     if not os.path.exists(DATA_FILE) or not os.path.exists(HOLIDAY_FILE):
         from generate_data import generate_lunar_nohand_days, generate_holidays
+
         if not os.path.exists(DATA_FILE):
             generate_lunar_nohand_days()
         if not os.path.exists(HOLIDAY_FILE):
