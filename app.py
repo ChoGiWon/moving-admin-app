@@ -408,16 +408,20 @@ def admin_reviews_delete(rev_id):
     return redirect(url_for("admin_reviews"))
 
 
-# 💡 관리자 - 이사 후기 내 특정 사진 개별 삭제 라우트
+# 💡 관리자 - 이사 후기 내 특정 사진 개별 삭제 라우트 (비동기 처리)
 @app.route("/admin/reviews/delete-image", methods=["POST"])
 def admin_reviews_delete_image():
     if not session.get("admin_logged_in"):
-        return redirect(url_for("admin_login"))
+        return jsonify({"success": False, "message": "권한이 없습니다."})
 
     session["last_activity"] = time.time()
+    
+    data = request.get_json() or {}
+    review_id = data.get("review_id")
+    img_url = data.get("img_url", "").strip()
 
-    review_id = request.form.get("review_id", type=int)
-    img_url = request.form.get("img_url", "").strip()
+    if not review_id or not img_url:
+        return jsonify({"success": False, "message": "잘못된 요청입니다."})
 
     reviews = load_reviews()
     target_review = next((r for r in reviews if r.get("id") == review_id), None)
@@ -437,8 +441,9 @@ def admin_reviews_delete_image():
             except Exception as e:
                 print("사진 파일 실제 삭제 에러:", e)
 
-    return redirect(url_for("admin_reviews"))
+            return jsonify({"success": True})
 
+    return jsonify({"success": False, "message": "사진을 찾을 수 없습니다."})
 
 @app.route("/admin/update/<int:est_id>", methods=["POST"])
 def admin_update(est_id):
