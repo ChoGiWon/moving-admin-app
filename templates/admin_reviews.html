@@ -396,7 +396,12 @@
             div.className = 'admin-review-item';
             div.id = `item-${itemCount}`;
             div.innerHTML = `
-                <h4 style="margin-top: 0; color: #333;">후기 #${itemCount + 1} (신규)</h4>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 style="margin: 0; color: #333;">후기 #${itemCount + 1} (신규)</h4>
+                    <button type="button" onclick="this.closest('.admin-review-item').remove()" style="background-color: #6c757d; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.85rem;">
+                        ❌ 작성 취소
+                    </button>
+                </div>
                 <div class="form-row">
                     <label>지역</label>
                     <input type="text" name="region" placeholder="예: 아산시 배방읍" required>
@@ -435,7 +440,7 @@
 
             itemCount++;
         }
-        
+
         function previewImages(input, index) {
             const previewContainer = document.getElementById(`new_preview_${index}`);
             if (!previewContainer) return;
