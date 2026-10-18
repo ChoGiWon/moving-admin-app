@@ -202,7 +202,8 @@
                         </div>
                         <div class="form-row">
                             <label>사진 추가 (PC: 파일선택 / 모바일: 사진첩·카메라)</label>
-                            <input type="file" name="images_{{ loop.index0 }}" accept="image/*" multiple capture="environment">
+                            <!-- 💡 capture 속성을 제거하여 사진첩 / 카메라 선택창이 떠오르도록 수정 -->
+                            <input type="file" name="images_{{ loop.index0 }}" accept="image/*" multiple>
                             <div class="preview-thumbs">
                                 {% for img in review.images %}
                                 <img src="{{ img }}" alt="등록된 사진">
@@ -229,7 +230,8 @@
                         </div>
                         <div class="form-row">
                             <label>사진 추가 (PC: 파일선택 / 모바일: 사진첩·카메라)</label>
-                            <input type="file" name="images_0" accept="image/*" multiple capture="environment">
+                            <!-- 💡 capture 속성을 제거하여 사진첩 / 카메라 선택창이 떠오르도록 수정 -->
+                            <input type="file" name="images_0" accept="image/*" multiple>
                         </div>
                     </div>
                 {% endif %}
@@ -263,7 +265,7 @@
                 </div>
                 <div class="form-row">
                     <label>사진 추가 (PC: 파일선택 / 모바일: 사진첩·카메라)</label>
-                    <input type="file" name="images_${itemCount}" accept="image/*" multiple capture="environment">
+                    <input type="file" name="images_${itemCount}" accept="image/*" multiple>
                 </div>
             `;
             container.appendChild(div);
