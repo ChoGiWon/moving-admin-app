@@ -729,7 +729,7 @@
     </div>
 </section>
 
-<!-- 🚚 화면 아래를 왕복하는 이삿짐 트럭 애니메이션 영역 -->
+<!-- 🚚 화면 아래를 왕복하며 연기와 덜컹거림이 추가된 이삿짐 트럭 애니메이션 영역 -->
 <style>
     .cute-truck-bar {
         position: fixed;
@@ -746,26 +746,41 @@
         0% {
             transform: translateX(-40px) scaleX(-1);
         }
-
         49.9% {
             transform: translateX(calc(100vw - 120px)) scaleX(-1);
         }
-
         50% {
             transform: translateX(calc(100vw - 120px)) scaleX(1);
         }
-
         99.9% {
             transform: translateX(-40px) scaleX(1);
         }
-
         100% {
             transform: translateX(-40px) scaleX(-1);
         }
     }
 
+    /* 💡 주행 시 트럭이 위아래로 살짝 덜컹거리는 생동감 애니메이션 */
+    @keyframes truckBouncing {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+    }
+
+    /* 💡 귀여운 연기 방울이 피어오르며 커지다 사라지는 애니메이션 */
+    @keyframes puffSmoke {
+        0% {
+            opacity: 0.8;
+            transform: scale(0.4) translate(0, 0);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(1.3) translate(-20px, -15px);
+        }
+    }
+
     .cute-truck-wrap {
         display: inline-block;
+        position: relative;
         animation: driveBackAndForth 15s linear infinite;
     }
 
@@ -773,12 +788,45 @@
         width: 100px;
         height: auto;
         display: block;
+        animation: truckBouncing 0.4s ease-in-out infinite;
+    }
+
+    /* 💡 귀여운 구름 연기 방울 요소 */
+    .smoke-puff {
+        position: absolute;
+        bottom: 12px;
+        right: -10px; /* 트럭 뒷꽁무니 위치 */
+        width: 12px;
+        height: 12px;
+        background: rgba(200, 200, 200, 0.7);
+        border-radius: 50%;
+        animation: puffSmoke 0.9s ease-out infinite;
+    }
+
+    .smoke-puff.puff-2 {
+        animation-delay: 0.3s;
+        right: -18px;
+        bottom: 16px;
+        width: 15px;
+        height: 15px;
+    }
+
+    .smoke-puff.puff-3 {
+        animation-delay: 0.6s;
+        right: -24px;
+        bottom: 20px;
+        width: 18px;
+        height: 18px;
     }
 </style>
 
 <div class="cute-truck-bar">
     <div class="cute-truck-wrap">
         <img src="{{ url_for('static', filename='moving_truck.png') }}" alt="moving_truck" class="cute-truck-img">
+        <!-- 💡 트럭 뒤에서 피어오르는 귀여운 연기 방울 3개 -->
+        <div class="smoke-puff puff-1"></div>
+        <div class="smoke-puff puff-2"></div>
+        <div class="smoke-puff puff-3"></div>
     </div>
 </div>
 
