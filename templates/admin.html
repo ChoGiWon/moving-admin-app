@@ -45,17 +45,20 @@
             align-items: flex-end;
         }
 
-        .review-manage-btn, .logout-btn {
+        .review-manage-btn,
+        .logout-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 135px; /* 두 버튼 동일 너비 고정 */
+            width: 135px;
+            /* 두 버튼 동일 너비 고정 */
             padding: 8px 0;
-            border-radius: 20px; /* 라운드 알약 형태 */
+            border-radius: 20px;
+            /* 라운드 알약 형태 */
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: all 0.2s ease;
             box-sizing: border-box;
             text-align: center;
@@ -239,10 +242,15 @@
     <div class="admin-container">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
             <a href="/" class="home-link" style="margin-bottom: 0; padding-top: 5px;">&lsaquo; 홈페이지로 돌아가기</a>
-            
+
             <!-- 💡 동일한 너비와 정밀한 우측 끝맞춤 버튼 그룹 -->
             <div class="admin-nav-btn-group">
                 <a href="/admin/reviews" class="review-manage-btn">📝 이사 후기 관리</a>
+                <!-- 💡 iloveing 외부 브라우저 연결 버튼 추가 -->
+                <a href="https://iloveing.com/ko" target="_blank" rel="noopener noreferrer"
+                    class="top-action-btn external-link-btn">
+                    🔗 iloveing 열기
+                </a>
                 <a href="/admin/logout" class="logout-btn">🔒 로그아웃</a>
             </div>
         </div>
