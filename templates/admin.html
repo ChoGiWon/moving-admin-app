@@ -223,10 +223,10 @@
 
 <body>
     <div class="admin-container">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="/" class="home-link">&lsaquo; 홈페이지로 돌아가기</a>
-            <div>
-                <!-- 💡 상단 이동 버튼 추가 -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+            <a href="/" class="home-link" style="margin-bottom: 0;">&lsaquo; 홈페이지로 돌아가기</a>
+            <!-- 💡 모바일 화면에서 버튼들이 겹치지 않도록 세로(종) 방향으로 정렬 -->
+            <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
                 <a href="/admin/reviews" class="review-manage-btn">📝 이사 후기 관리</a>
                 <a href="/admin/logout" class="logout-btn">로그아웃</a>
             </div>
