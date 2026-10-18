@@ -217,7 +217,7 @@
             <h2>📝 이사 후기 / 현장 스케치 관리</h2>
         </div>
         <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">
-            홈 화면 7번 항목에 노출될 후기 및 사진을 직접 추가/수정합니다.
+            홈 화면 7번 항목에 노출될 후기 및 사진을 직접 추가/수정/삭제합니다.
         </p>
 
         <form action="/admin/reviews" method="POST" enctype="multipart/form-data">
@@ -227,7 +227,16 @@
                 {% if reviews %}
                     {% for review in reviews %}
                     <div class="admin-review-item" id="item-{{ loop.index0 }}">
-                        <h4 style="margin-top: 0; color: #333;">후기 #{{ loop.index }}</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="margin: 0; color: #333;">후기 #{{ loop.index }} (ID: {{ review.id }})</h4>
+                            <!-- 💡 각 항목별 개별 삭제 버튼 추가 -->
+                            {% if review.id %}
+                            <button type="submit" formaction="{{ url_for('admin_reviews_delete', rev_id=review.id) }}" formmethod="POST" onclick="return confirm('정말 이 이사 후기를 삭제하시겠습니까?');" style="background-color: #dc3545; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.85rem;">
+                                🗑️ 이 후기 삭제
+                            </button>
+                            {% endif %}
+                        </div>
+
                         <div class="form-row">
                             <label>지역</label>
                             <input type="text" name="region" value="{{ review.region }}" placeholder="예: 천안시 동남구" required>
@@ -301,7 +310,7 @@
             div.className = 'admin-review-item';
             div.id = `item-${itemCount}`;
             div.innerHTML = `
-                <h4 style="margin-top: 0; color: #333;">후기 #${itemCount + 1}</h4>
+                <h4 style="margin-top: 0; color: #333;">후기 #${itemCount + 1} (신규)</h4>
                 <div class="form-row">
                     <label>지역</label>
                     <input type="text" name="region" placeholder="예: 아산시 배방읍" required>
