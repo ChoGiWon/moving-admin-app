@@ -45,11 +45,14 @@
             align-items: flex-end;
         }
 
-        .top-action-btn {
+        .top-action-btn,
+        .external-link-btn,
+        .back-admin-btn,
+        .logout-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 140px;
+            width: 135px;
             padding: 8px 0;
             border-radius: 20px;
             text-decoration: none;
@@ -69,6 +72,16 @@
 
         .back-admin-btn:hover {
             background: #0056b3;
+        }
+
+        .external-link-btn {
+            background: #6f42c1;
+            color: #ffffff;
+            border: 1px solid #5a32a3;
+        }
+
+        .external-link-btn:hover {
+            background: #5a32a3;
         }
 
         .logout-btn {
@@ -178,6 +191,11 @@
             
             <div class="admin-nav-btn-group">
                 <a href="/admin" class="top-action-btn back-admin-btn">📋 관리자 메인</a>
+                <!-- 💡 iloveimg 외부 브라우저 연결 버튼 추가 -->
+                <a href="https://www.iloveimg.com/ko" target="_blank" rel="noopener noreferrer"
+                    class="external-link-btn" onclick="openExternalBrowser(event, 'https://www.iloveimg.com/ko')">
+                    🔗 iloveimg 열기
+                </a>
                 <a href="/admin/logout" class="top-action-btn logout-btn">🔒 로그아웃</a>
             </div>
         </div>
@@ -252,6 +270,16 @@
     </div>
 
     <script>
+        // 💡 모바일 환경에서 인앱 웹뷰 대신 기본 브라우저 앱으로 열리도록 유도하는 함수
+        function openExternalBrowser(event, url) {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            if (/android/i.test(userAgent)) {
+                event.preventDefault();
+                const cleanUrl = url.replace('https://', '').replace('http://', '');
+                window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end;`;
+            }
+        }
+
         let itemCount = document.querySelectorAll('.admin-review-item').length;
 
         function addReviewForm() {
