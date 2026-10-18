@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}관리자 - 이사 후기 관리{% endblock %}
+
+{% block content %}
+<style>
+    .admin-review-wrap {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    .admin-review-item {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        position: relative;
+    }
+    .form-row {
+        margin-bottom: 12px;
+    }
+    .form-row label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .form-row input, .form-row textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+    }
+    .add-btn, .submit-btn {
+        background: #ff9800;
+        color: #fff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+        font-size: 1rem;
+    }
+    .add-btn {
+        background: #28a745;
+        margin-bottom: 15px;
+    }
+    .preview-thumbs {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+    .preview-thumbs img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+</style>
+
+<div class="admin-review-wrap">
+    <h2>📝 이사 후기 / 현장 스케치 관리</h2>
+    <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">
+        홈 화면 7번 항목에 노출될 후기 및 사진을 직접 추가/수정합니다.
+    </p>
+
+    <form action="/admin/reviews" method="POST" enctype="multipart/form-data">
+        <button type="button" class="add-btn" onclick="addReviewForm()">➕ 후기 항목 추가하기</button>
+
+        <div id="reviewFormContainer">
+            {% if reviews %}
+                {% for review in reviews %}
+                <div class="admin-review-item" id="item-{{ loop.index0 }}">
+                    <h4>후기 #{{ loop.index }}</h4>
+                    <div class="form-row">
+                        <label>지역</label>
+                        <input type="text" name="region" value="{{ review.region }}" placeholder="예: 천안시 동남구" required>
+                    </div>
+                    <div class="form-row">
+                        <label>글 제목</label>
+                        <input type="text" name="title" value="{{ review.title }}" placeholder="예: 깔끔하고 신속한 이사 서비스!" required>
+                    </div>
+                    <div class="form-row">
+                        <label>글 내용</label>
+                        <textarea name="content" rows="3" required>{{ review.content }}</textarea>
+                    </div>
+                    <div class="form-row">
+                        <label>사진 추가 (PC: 파일선택 / 모바일: 사진첩·카메라)</label>
+                        <!-- capture="environment" 속성으로 모바일에서 카메라 선택 가능 -->
+                        <input type="file" name="images_{{ loop.index0 }}" accept="image/*" multiple capture="environment">
+                        <div class="preview-thumbs">
+                            {% for img in review.images %}
+                            <img src="{{ img }}" alt="등록된 사진">
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- 기본 1개 폼 제공 -->
+                <div class="admin-review-item" id="item-0">
+                    <h4>후기 #1</h4>
+                    <div class="form-row">
+                        <label>지역</label>
+                        <input type="text" name="region" placeholder="예: 천안시 동남구" required>
+                    </div>
+                    <div class="form-row">
+                        <label>글 제목</label>
+                        <input type="text" name="title" placeholder="예: 깔끔하고 신속한 이사 서비스!" required>
+                    </div>
+                    <div class="form-row">
+                        <label>글 내용</label>
+                        <textarea name="content" rows="3" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <label>사진 추가 (PC: 파일선택 / 모바일: 사진첩·카메라)</label>
+                        <input type="file" name="images_0" accept="image/*" multiple capture="environment">
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="submit-btn">💾 전체 저장하기</button>
+    </form>
+</div>
+
+<script>
+    let itemCount = document.querySelectorAll('.admin-review-item').length;
+
+    function addReviewForm() {
+        const container = document.getElementById('reviewFormContainer');
+        const div = document.createElement('div');
+        div.className = 'admin-review-item';
+        div.id = `item-${itemCount}`;
+        div.innerHTML = `
+            <h4>후기 #${itemCount + 1}</h4>
+            <div class="form-row">
+                <label>지역</label>
+                <input type="text" name="region" placeholder="예: 아산시 배방읍" required>
+            </div>
+            <div class="form-row">
+                <label>글 제목</label>
+                <input type="text" name="title" placeholder="제목을 입력하세요" required>
+            </div>
+            <div class="form-row">
+                <label>글 내용</label>
+                <textarea name="content" rows="3" required></textarea>
+            </div>
+            <div class="form-row">
+                <label>사진 추가 (PC: 파일선택 / 모바일: 사진첩·카메라)</label>
+                <input type="file" name="images_${itemCount}" accept="image/*" multiple capture="environment">
+            </div>
+        `;
+        container.appendChild(div);
+        itemCount++;
+    }
+</script>
+{% endblock %}

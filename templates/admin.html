@@ -37,6 +37,23 @@
             margin: 0;
         }
 
+        /* 💡 이사 후기 관리 이동 버튼 스타일 추가 */
+        .review-manage-btn {
+            background: #ff9800;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-right: 8px;
+            transition: background 0.2s;
+        }
+
+        .review-manage-btn:hover {
+            background: #e68900;
+        }
+
         .logout-btn {
             background: #dc3545;
             color: white;
@@ -208,7 +225,11 @@
     <div class="admin-container">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <a href="/" class="home-link">&lsaquo; 홈페이지로 돌아가기</a>
-            <a href="/admin/logout" class="logout-btn">로그아웃</a>
+            <div>
+                <!-- 💡 상단 이동 버튼 추가 -->
+                <a href="/admin/reviews" class="review-manage-btn">📝 이사 후기 관리</a>
+                <a href="/admin/logout" class="logout-btn">로그아웃</a>
+            </div>
         </div>
 
         <div class="header-wrap">
@@ -439,17 +460,14 @@
                 alert('전화번호 정보가 없습니다.');
                 return;
             }
-            // 숫자 이외의 문자를 제거하여 전화번호 포맷 정제
             const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
-
-            // 모바일 기본 전화 앱 호출
             window.location.href = `tel:${cleanNumber}`;
         }
 
         let isDeleting = false;
 
         function deleteEstimate(estId) {
-            if (isDeleting) return; // 중복 클릭 방지
+            if (isDeleting) return;
 
             const passwordInput = document.getElementById('delete_password_' + estId);
             const password = passwordInput.value;
@@ -498,7 +516,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
     <script>
-        // 1. 본인의 파이어베이스 프로젝트 설정값 입력
         const firebaseConfig = {
             apiKey: "AIzaSyCFHnunxUTOV38tcsVWjTxrsMQ8JLNW6BA",
             projectId: "moving-admin-push",
@@ -508,31 +525,26 @@
         firebase.initializeApp(firebaseConfig);
         const messaging = firebase.messaging();
 
-        // 💡 1-1. 브라우저/기기 전용 고유 ID 생성 및 localStorage 저장 (최초 1회 생성 후 유지)
         let deviceId = localStorage.getItem("admin_device_uuid");
         if (!deviceId) {
             deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now();
             localStorage.setItem("admin_device_uuid", deviceId);
         }
 
-        // 2. 서비스 워커 등록 및 알림 권한/토큰 요청
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
                 .then((registration) => {
                     console.log('서비스 워커 등록 성공:', registration);
 
-                    // 브라우저 알림 권한 요청
                     Notification.requestPermission().then((permission) => {
                         if (permission === 'granted') {
                             console.log('알림 권한이 허용되었습니다.');
 
-                            // FCM 토큰 발급
                             messaging.getToken({ vapidKey: 'BOwFwvEz6Uck5wOtsI4QzkT_Yv3RTp7gBgNYAQBsLLprc0E1_KfbgkqfFSy3iSNID9tymLCMBwwiBKdlAqcwTLw' })
                                 .then((currentToken) => {
                                     if (currentToken) {
                                         console.log('FCM 토큰 발급 성공:', currentToken);
 
-                                        // 백엔드 서버(/admin/save-token)로 토큰 및 device_id 전송
                                         fetch('/admin/save-token', {
                                             method: 'POST',
                                             headers: {
@@ -540,7 +552,7 @@
                                             },
                                             body: JSON.stringify({
                                                 token: currentToken,
-                                                device_id: deviceId // 👈 기기 고유 ID 함께 전송
+                                                device_id: deviceId
                                             })
                                         })
                                             .then(res => res.json())

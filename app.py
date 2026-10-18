@@ -10,6 +10,7 @@ from flask import (
 )
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+from werkzeug.utils import secure_filename
 
 import os
 import json
@@ -35,6 +36,14 @@ ADMIN_PASSWORD = "admin1234"  # 관리자 비밀번호
 TIMEOUT_SECONDS = 300  # 5분 (300초 동안 활동 없으면 완전 로그아웃)
 
 TOKEN_FILE = "admin_tokens.txt"
+
+# 💡 이사 후기 데이터 및 업로드 폴더 경로 설정 (.gitignore 대상)
+REVIEWS_DATA_DIR = os.path.join(app.root_path, "data")
+REVIEWS_UPLOAD_DIR = os.path.join(app.root_path, "static", "uploads", "reviews")
+REVIEWS_FILE = os.path.join(REVIEWS_DATA_DIR, "reviews.json")
+
+os.makedirs(REVIEWS_DATA_DIR, exist_ok=True)
+os.makedirs(REVIEWS_UPLOAD_DIR, exist_ok=True)
 
 # --- [Firebase Admin SDK 초기화 및 FCM 푸시 전송 함수] ---
 try:
@@ -153,6 +162,22 @@ def save_estimate(data):
         json.dump(clean_estimates, f, ensure_ascii=False, indent=4)
 
 
+# 💡 이사 후기 데이터 로드 및 저장 함수 추가
+def load_reviews():
+    if not os.path.exists(REVIEWS_FILE):
+        return []
+    try:
+        with open(REVIEWS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return []
+
+
+def save_reviews(data):
+    with open(REVIEWS_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+
 @app.after_request
 def add_header(response):
     # 브라우저 및 모바일이 HTML/정적 파일을 캐시하지 못하도록 원천 차단
@@ -164,7 +189,8 @@ def add_header(response):
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    reviews = load_reviews()
+    return render_template("index.html", reviews=reviews)
 
 
 @app.route("/api/nohand-days")
@@ -262,6 +288,59 @@ def admin_page():
     return render_template("admin.html", estimates=estimates)
 
 
+# 💡 관리자 - 이사 후기 관리 페이지 라우트 추가
+@app.route("/admin/reviews", methods=["GET", "POST"])
+def admin_reviews():
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+
+    session["last_activity"] = time.time()
+
+    if request.method == "POST":
+        titles = request.form.getlist("title")
+        regions = request.form.getlist("region")
+        contents = request.form.getlist("content")
+
+        existing_reviews = load_reviews()
+        updated_reviews = []
+
+        for i in range(len(titles)):
+            review_id = i + 1
+            review_images = []
+
+            # 기존 이미지가 있다면 유지
+            if i < len(existing_reviews):
+                review_images = existing_reviews[i].get("images", [])
+
+            # 새로 업로드된 사진 처리 (멀티 파일)
+            files = request.files.getlist(f"images_{i}")
+            for file in files:
+                if file and file.filename != "":
+                    filename = secure_filename(
+                        f"rev_{review_id}_{int(time.time())}_{file.filename}"
+                    )
+                    save_path = os.path.join(REVIEWS_UPLOAD_DIR, filename)
+                    file.save(save_path)
+                    img_url = f"/static/uploads/reviews/{filename}"
+                    review_images.append(img_url)
+
+            updated_reviews.append(
+                {
+                    "id": review_id,
+                    "region": regions[i],
+                    "title": titles[i],
+                    "content": contents[i],
+                    "images": review_images,
+                }
+            )
+
+        save_reviews(updated_reviews)
+        return redirect(url_for("admin_reviews"))
+
+    reviews = load_reviews()
+    return render_template("admin_reviews.html", reviews=reviews)
+
+
 @app.route("/admin/update/<int:est_id>", methods=["POST"])
 def admin_update(est_id):
     if not session.get("admin_logged_in"):
@@ -283,7 +362,9 @@ def admin_update(est_id):
                 )
             else:
                 address = request.form.get("userAddress", est["userAddress"])
-                est["userAddress"] = address.replace("\r\n", " / ").replace("\n", " / ")
+                est["userAddress"] = address.replace("\r\n", " / ").replace(
+                    "\n", " / "
+                )
 
             est["moveDate1"] = request.form.get("moveDate1", est["moveDate1"])
             est["visitDate"] = request.form.get(

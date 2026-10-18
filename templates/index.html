@@ -230,6 +230,165 @@
     }
 </script>
 
+<!-- 7. 생생 이사 현황 / 고객 후기 위젯 (요청하신 위치) -->
+<section id="reviews-section" class="section review-widget-section">
+    <style>
+        .review-section-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 30px 0 20px 0;
+            color: #212529;
+        }
+        .review-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .review-card {
+            display: flex;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            min-height: 160px;
+        }
+        .review-img-box {
+            width: 40%;
+            max-width: 220px;
+            position: relative;
+            background: #111;
+            flex-shrink: 0;
+        }
+        .review-img-box img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+        .review-img-box img.active {
+            opacity: 1;
+        }
+        .review-content-box {
+            width: 60%;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .review-region {
+            display: inline-block;
+            background: #fff3e0;
+            color: #ff9800;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            align-self: flex-start;
+        }
+        .review-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .review-desc {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+            white-space: pre-line;
+        }
+        @media (max-width: 768px) {
+            .review-card {
+                min-height: 130px;
+            }
+            .review-img-box {
+                width: 35%;
+            }
+            .review-content-box {
+                width: 65%;
+                padding: 10px 12px;
+            }
+            .review-title {
+                font-size: 0.95rem;
+            }
+            .review-desc {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+
+    <h3 class="review-section-title">🚛 생생 이사 현황 & 후기</h3>
+
+    <div class="review-container" id="reviewContainer">
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="review-card" data-review-index="{{ loop.index0 }}">
+                <div class="review-img-box">
+                    {% if review.images %}
+                        {% for img in review.images %}
+                        <img src="{{ img }}" class="{% if loop.first %}active{% endif %}" alt="이사 사진">
+                        {% endfor %}
+                    {% else %}
+                        <img src="{{ url_for('static', filename='moving_truck.png') }}" class="active" alt="기본 이미지" style="object-fit: contain; padding: 10px;">
+                    {% endif %}
+                </div>
+                <div class="review-content-box">
+                    <span class="review-region">📍 {{ review.region }}</span>
+                    <div class="review-title">{{ review.title }}</div>
+                    <div class="review-desc">{{ review.content }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align: center; color: #888; padding: 20px;">등록된 이사 후기가 없습니다.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. 카드 내부 개별 사진 전환 (2장 이상일 경우 2.5초 간격 순차 전환)
+            const imgBoxes = document.querySelectorAll('.review-img-box');
+            imgBoxes.forEach(box => {
+                const imgs = box.querySelectorAll('img');
+                if (imgs.length > 1) {
+                    let idx = 0;
+                    setInterval(() => {
+                        imgs[idx].classList.remove('active');
+                        idx = (idx + 1) % imgs.length;
+                        imgs[idx].classList.add('active');
+                    }, 2500);
+                }
+            });
+
+            // 2. 후기가 4개 이상일 경우 3개씩 순차 로테이션 표시 (1개일 경우 1개만 표시)
+            const cards = document.querySelectorAll('.review-card');
+            if (cards.length >= 4) {
+                let startIndex = 0;
+                function updateVisibleCards() {
+                    cards.forEach((card, index) => {
+                        if (index >= startIndex && index < startIndex + 3) {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    startIndex = (startIndex + 1) % (cards.length - 2);
+                }
+                updateVisibleCards();
+                setInterval(updateVisibleCards, 4000); // 4초 간격 순차 로테이션
+            }
+        });
+    </script>
+</section>
+
 <!-- 10. 견적 요청 필요 자료 소개 및 고객 유의사항 -->
 <section class="section notice-box">
     <h3></h3>
