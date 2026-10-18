@@ -123,13 +123,14 @@
             color: #555;
         }
 
-        .form-row input[type="text"], .form-row textarea {
+        .form-row input[type="text"], .form-row textarea, .form-row select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ced4da;
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 1rem;
+            background: #fff;
         }
 
         .form-row input[type="file"] {
@@ -174,7 +175,6 @@
             flex-wrap: wrap;
         }
 
-        /* 💡 기존 등록된 사진 개별 삭제 박스 스타일 */
         .existing-img-box {
             display: flex;
             flex-direction: column;
@@ -270,11 +270,21 @@
                             <label>글 내용</label>
                             <textarea name="content" rows="3" required>{{ review.content }}</textarea>
                         </div>
+                        <!-- 💡 별점 선택 입력 필드 추가 -->
+                        <div class="form-row">
+                            <label>별점 평가</label>
+                            <select name="rating">
+                                <option value="5" {% if review.rating == 5 or not review.rating %}selected{% endif %}>⭐⭐⭐⭐⭐ (5점 - 최고예요)</option>
+                                <option value="4" {% if review.rating == 4 %}selected{% endif %}>⭐⭐⭐⭐ (4점 - 좋아요)</option>
+                                <option value="3" {% if review.rating == 3 %}selected{% endif %}>⭐⭐⭐ (3점 - 보통이에요)</option>
+                                <option value="2" {% if review.rating == 2 %}selected{% endif %}>⭐⭐ (2점 - 아쉬워요)</option>
+                                <option value="1" {% if review.rating == 1 %}selected{% endif %}>⭐ (1점 - 별로예요)</option>
+                            </select>
+                        </div>
                         <div class="form-row">
                             <label>등록된 사진 관리 (삭제 버튼을 누르면 해당 사진이 즉시 삭제됩니다)</label>
                             
                             <div class="preview-thumbs" id="preview_box_{{ review.id }}_{{ loop.index0 }}">
-                                <!-- 💡 비동기 방식의 개별 사진 삭제 버튼 -->
                                 {% for img in review.images %}
                                 <div class="existing-img-box" id="img-elem-{{ review.id }}-{{ loop.index0 }}">
                                     <img src="{{ img }}" alt="등록된 사진">
@@ -306,6 +316,17 @@
                             <label>글 내용</label>
                             <textarea name="content" rows="3" required></textarea>
                         </div>
+                        <!-- 💡 신규 등록 폼 별점 필드 -->
+                        <div class="form-row">
+                            <label>별점 평가</label>
+                            <select name="rating">
+                                <option value="5" selected>⭐⭐⭐⭐⭐ (5점 - 최고예요)</option>
+                                <option value="4">⭐⭐⭐⭐ (4점 - 좋아요)</option>
+                                <option value="3">⭐⭐⭐ (3점 - 보통이에요)</option>
+                                <option value="2">⭐⭐ (2점 - 아쉬워요)</option>
+                                <option value="1">⭐ (1점 - 별로예요)</option>
+                            </select>
+                        </div>
                         <div class="form-row">
                             <label>사진 파일 선택 (PC/사진첩)</label>
                             <input type="file" name="images_0" accept="image/*" multiple onchange="previewImages(this, 0)">
@@ -329,7 +350,6 @@
             }
         }
 
-        // 💡 비동기로 개별 사진 삭제 요청을 보내는 함수
         function deleteReviewImage(reviewId, imgUrl, elementId) {
             if (!confirm("이 사진을 정말 삭제하시겠습니까?")) return;
 
@@ -377,6 +397,16 @@
                 <div class="form-row">
                     <label>글 내용</label>
                     <textarea name="content" rows="3" required></textarea>
+                </div>
+                <div class="form-row">
+                    <label>별점 평가</label>
+                    <select name="rating">
+                        <option value="5" selected>⭐⭐⭐⭐⭐ (5점 - 최고예요)</option>
+                        <option value="4">⭐⭐⭐⭐ (4점 - 좋아요)</option>
+                        <option value="3">⭐⭐⭐ (3점 - 보통이에요)</option>
+                        <option value="2">⭐⭐ (2점 - 아쉬워요)</option>
+                        <option value="1">⭐ (1점 - 별로예요)</option>
+                    </select>
                 </div>
                 <div class="form-row">
                     <label>사진 파일 선택 (PC/사진첩)</label>

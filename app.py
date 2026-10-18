@@ -300,7 +300,7 @@ def admin_page():
     return render_template("admin.html", estimates=estimates)
 
 
-# 관리자 - 이사 후기 관리 페이지 라우트 (사진 다중 선택 삭제 로직 완벽 연동)
+# 관리자 - 이사 후기 관리 페이지 라우트 (별점 평가 저장 로직 반영)
 @app.route("/admin/reviews", methods=["GET", "POST"])
 def admin_reviews():
     if not session.get("admin_logged_in"):
@@ -312,6 +312,7 @@ def admin_reviews():
         titles = request.form.getlist("title")
         regions = request.form.getlist("region")
         contents = request.form.getlist("content")
+        ratings = request.form.getlist("rating")  # 💡 별점 데이터 리스트
 
         existing_reviews = load_reviews()
         updated_reviews = []
@@ -349,12 +350,19 @@ def admin_reviews():
                     img_url = f"/static/uploads/reviews/{filename}"
                     review_images.append(img_url)
 
+            # 별점 값 안전하게 파싱 (기본값 5점)
+            try:
+                rating_val = int(ratings[i]) if i < len(ratings) else 5
+            except:
+                rating_val = 5
+
             updated_reviews.append(
                 {
                     "id": review_id,
                     "region": regions[i],
                     "title": titles[i],
                     "content": contents[i],
+                    "rating": rating_val,  # 💡 별점 저장
                     "images": review_images,
                 }
             )
@@ -383,6 +391,10 @@ def admin_reviews_edit(rev_id):
         target_review["region"] = request.form.get("region", "").strip()
         target_review["title"] = request.form.get("title", "").strip()
         target_review["content"] = request.form.get("content", "").strip()
+        try:
+            target_review["rating"] = int(request.form.get("rating", 5))  # 💡 수정 시 별점 반영
+        except:
+            target_review["rating"] = 5
 
         save_reviews(reviews)
         return redirect(url_for("admin_reviews"))

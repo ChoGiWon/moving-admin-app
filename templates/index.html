@@ -238,7 +238,7 @@
     }
 </script>
 
-<!-- 7. 생생 이사 현황 / 고객 후기 위젯 (요청하신 위치) -->
+<!-- 7. 생생 이사 현황 / 고객 후기 위젯 (별점 출력 연동) -->
 <section id="reviews-section" class="section review-widget-section"
     style="max-width: 1000px; margin: 0 auto; box-sizing: border-box;">
     <style>
@@ -315,7 +315,7 @@
             font-size: 1.1rem;
             font-weight: bold;
             color: #1a1a1a;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             line-height: 1.3;
         }
 
@@ -368,6 +368,11 @@
             </div>
             <div class="review-content-box">
                 <span class="review-region">📍 {{ review.region }}</span>
+                <!-- 💡 방문자 페이지 별점 출력 영역 -->
+                <div class="review-rating" style="color: #ffc107; font-size: 0.95rem; margin-bottom: 4px;">
+                    {% set rating = review.rating | default(5) | int %}
+                    {% for _ in range(rating) %}⭐{% endfor %}
+                </div>
                 <div class="review-title">{{ review.title }}</div>
                 <div class="review-desc">{{ review.content }}</div>
             </div>
