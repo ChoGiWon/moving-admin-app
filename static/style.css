@@ -7,11 +7,13 @@ body {
 }
 
 .mobile-container {
-    max-width: 480px; /* 핸드폰 화면 너비 기준 */
+    max-width: 480px;
+    /* 핸드폰 화면 너비 기준 */
     margin: 0 auto;
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    padding-bottom: 70px; /* 하단 고정 버튼 레이어 간격 확보 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding-bottom: 70px;
+    /* 하단 고정 버튼 레이어 간격 확보 */
 }
 
 /* 1. 불편접수 상단 바 */
@@ -21,7 +23,11 @@ body {
     padding: 6px 12px;
     font-size: 0.85em;
 }
-.top-bar a { color: #721c24; text-decoration: none; }
+
+.top-bar a {
+    color: #721c24;
+    text-decoration: none;
+}
 
 /* 2, (로고 ) */
 .header-area {
@@ -35,23 +41,29 @@ body {
 /* 로고와 텍스트를 가로로 배치 */
 .logo-link {
     display: flex;
-    align-items: center;       /* 세로 중앙 정렬 */
-    text-decoration: none;     /* 밑줄 제거 */
-    color: #333;               /* 텍스트 기본 색상 */
+    align-items: center;
+    /* 세로 중앙 정렬 */
+    text-decoration: none;
+    /* 밑줄 제거 */
+    color: #333;
+    /* 텍스트 기본 색상 */
 }
 
 /* 로고 이미지 크기 */
 .logo-img {
-    height: 32px;              /* 높이 조절 */
+    height: 32px;
+    /* 높이 조절 */
     width: auto;
-    margin-right: 8px;         /* 이미지와 텍스트 사이 간격 */
+    margin-right: 8px;
+    /* 이미지와 텍스트 사이 간격 */
 }
 
 /* 로고 옆 텍스트 스타일 */
 .logo-text {
     font-size: 1.1em;
     font-weight: bold;
-    color: #2c3e50;            /* 원하는 글자 색상으로 변경 가능 */
+    color: #2c3e50;
+    /* 원하는 글자 색상으로 변경 가능 */
 }
 
 /* 3. 햄버거 네비 버튼 스타일 */
@@ -85,8 +97,10 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 9999;
     display: flex;
-    justify-content: center; /* 가로 중앙 정렬로 변경하여 여백 제거 */
-    align-items: center;     /* 세로 중앙 정렬 */
+    justify-content: center;
+    /* 가로 중앙 정렬로 변경하여 여백 제거 */
+    align-items: center;
+    /* 세로 중앙 정렬 */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -101,10 +115,12 @@ body {
 /* 메뉴 내부 내용 창 크기를 모바일 뷰(480px)에 정확히 맞춤 */
 .full-menu-content {
     width: 100%;
-    max-width: 480px; /* 핸드폰 최대 너비와 동일하게 설정 */
-    height: 100%;     /* 혹은 필요에 따라 90vh 등로 조절 가능 */
+    max-width: 480px;
+    /* 핸드폰 최대 너비와 동일하게 설정 */
+    height: 100%;
+    /* 혹은 필요에 따라 90vh 등로 조절 가능 */
     background-color: #ffffff;
-    overflow-y: auto; 
+    overflow-y: auto;
     padding: 20px;
     box-sizing: border-box;
     transform: translateY(20px);
@@ -206,7 +222,12 @@ body {
     background: #333;
     padding: 10px 0;
 }
-.main-nav a { color: white; text-decoration: none; font-size: 0.9em; }
+
+.main-nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 0.9em;
+}
 
 /* 각 섹션 공통 스타일 */
 .section {
@@ -219,7 +240,7 @@ body {
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .estimate-form {
@@ -326,6 +347,7 @@ body {
     border: 1px solid #eee;
     padding: 8px;
 }
+
 .process-item .thumb {
     width: 90px;
     height: 90px;
@@ -336,7 +358,10 @@ body {
     justify-content: center;
     text-align: center;
 }
-.process-item .desc { flex: 1; }
+
+.process-item .desc {
+    flex: 1;
+}
 
 /* 6번 우측 하단 플로팅 버튼 */
 .floating-buttons {
@@ -348,6 +373,7 @@ body {
     gap: 10px;
     z-index: 999;
 }
+
 .btn-float {
     padding: 10px 16px;
     border-radius: 25px;
@@ -355,15 +381,23 @@ body {
     text-decoration: none;
     font-weight: bold;
     font-size: 0.9em;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
-.call-btn { background-color: #28a745; }
-.chat-btn { background-color: #ffc107; color: #333; }
+
+.call-btn {
+    background-color: #28a745;
+}
+
+.chat-btn {
+    background-color: #ffc107;
+    color: #333;
+}
 
 /* 11. 모바일 달력 확대 및 터치 편의성 개선 */
-.large-mobile-cal th, 
+.large-mobile-cal th,
 .large-mobile-cal td {
-    padding: 14px 4px !important; /* 터치 영역 확대 */
+    padding: 14px 4px !important;
+    /* 터치 영역 확대 */
     font-size: 1.1rem !important;
 }
 
@@ -373,8 +407,11 @@ body {
 }
 
 @media (max-width: 768px) {
-    .calendar-table th, .calendar-table td {
-        height: 50px; /* 모바일에서 셀 높이 확보 */
+
+    .calendar-table th,
+    .calendar-table td {
+        height: 50px;
+        /* 모바일에서 셀 높이 확보 */
     }
 }
 
@@ -423,11 +460,13 @@ body {
 .cert-slides {
     display: flex;
     transition: transform 0.3s ease-in-out;
-    gap: 15px; /* PC 화면에서의 간격 */
+    gap: 15px;
+    /* PC 화면에서의 간격 */
 }
 
 .cert-item {
-    flex: 0 0 calc(50% - 7.5px); /* PC 화면에서 2장이 나란히 보이도록 설정 */
+    flex: 0 0 calc(50% - 7.5px);
+    /* PC 화면에서 2장이 나란히 보이도록 설정 */
     background: #f8f9fa;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -455,7 +494,8 @@ body {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5); /* 명암 배경 */
+    background: rgba(0, 0, 0, 0.5);
+    /* 명암 배경 */
     color: white;
     border: none;
     padding: 10px 14px;
@@ -463,28 +503,35 @@ body {
     font-size: 1.2em;
     border-radius: 50%;
     z-index: 10;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .slider-btn:hover {
     background: rgba(0, 0, 0, 0.8);
 }
 
-.prev-btn { left: 10px; }
-.next-btn { right: 10px; }
+.prev-btn {
+    left: 10px;
+}
+
+.next-btn {
+    right: 10px;
+}
 
 /* 📱 모바일 화면 기준 (768px 이하) */
 @media (max-width: 768px) {
     .cert-slides {
         gap: 0;
     }
-    
+
     .cert-item {
-        flex: 0 0 100%; /* 모바일에서는 화면 당 1장씩 꽉 차게 표시 */
+        flex: 0 0 100%;
+        /* 모바일에서는 화면 당 1장씩 꽉 차게 표시 */
     }
-    
+
     .slider-btn {
-        display: block; /* 모바일에서만 화살표 버튼 표시 */
+        display: block;
+        /* 모바일에서만 화살표 버튼 표시 */
     }
 }
 
@@ -525,7 +572,8 @@ body {
 .legend-color.no-hand-bg {
     width: 14px;
     height: 14px;
-    background-color: #ffe8cc; /* 명암 톤 색상 */
+    background-color: #ffe8cc;
+    /* 명암 톤 색상 */
     border: 1px solid #ffa94d;
     border-radius: 3px;
 }
@@ -607,11 +655,23 @@ body {
     border: 1px solid #dee2e6;
 }
 
-.calendar-table th.sun { color: #e03131; }
-.calendar-table th.sat { color: #1971c2; }
+.calendar-table th.sun,
+.calendar-table th.holiday {
+    color: #e03131;
+}
+
+.calendar-table td.sun .day-number,
+.calendar-table td.holiday .day-number {
+    color: #e03131 !important;
+}
+
+.calendar-table th.sat {
+    color: #1971c2;
+}
 
 .calendar-table td {
-    height: 52px; /* 셀 높이를 넉넉하게 확장 */
+    height: 52px;
+    /* 셀 높이를 넉넉하게 확장 */
     vertical-align: top;
     text-align: center;
     padding: 4px 0 0 0;
@@ -626,12 +686,18 @@ body {
     display: block;
 }
 
-.calendar-table td.sun .day-number { color: #e03131; }
-.calendar-table td.sat .day-number { color: #1971c2; }
+.calendar-table td.sun .day-number {
+    color: #e03131;
+}
+
+.calendar-table td.sat .day-number {
+    color: #1971c2;
+}
 
 /* 3-1) 손없는 날: 칸 색상 명암 강조 */
 .calendar-table td.no-hand-day {
-    background-color: #fff4e6; /* 명암 톤 */
+    background-color: #fff4e6;
+    /* 명암 톤 */
 }
 
 /*.calendar-table td.no-hand-day .day-number {
@@ -740,12 +806,14 @@ body {
     .cert-slides {
         gap: 0;
     }
-    
+
     .cert-item {
-        flex: 0 0 100%; /* 모바일에서는 1장씩 꽉 차게 표시 */
+        flex: 0 0 100%;
+        /* 모바일에서는 1장씩 꽉 차게 표시 */
     }
-    
+
     .slider-btn {
-        display: block; /* 모바일에서만 화살표 노출 */
+        display: block;
+        /* 모바일에서만 화살표 노출 */
     }
 }
