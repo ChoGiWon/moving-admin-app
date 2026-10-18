@@ -371,6 +371,8 @@ def admin_reviews():
         return redirect(url_for("admin_reviews"))
 
     reviews = load_reviews()
+    # 💡 가장 최근에 등록한 후기(또는 ID가 큰 후기)가 맨 위로 오도록 역순 정렬
+    reviews = sorted(reviews, key=lambda x: x.get("id", 0), reverse=True)
     return render_template("admin_reviews.html", reviews=reviews)
 
 
