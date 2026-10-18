@@ -171,17 +171,39 @@
 
         .preview-thumbs {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             margin-top: 10px;
             flex-wrap: wrap;
         }
 
-        .preview-thumbs img {
+        /* 💡 기존 등록된 사진 개별 삭제를 위한 박스 스타일 */
+        .existing-img-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fff;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .existing-img-box img {
             width: 65px;
             height: 65px;
             object-fit: cover;
             border-radius: 4px;
-            border: 1px solid #ddd;
+            margin-bottom: 4px;
+        }
+
+        .existing-img-box label {
+            font-size: 0.75rem;
+            color: #dc3545;
+            cursor: pointer;
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            margin-bottom: 0;
         }
 
         /* 💡 스마트폰 화면(768px 이하) 패딩 최적화 미디어쿼리 */
@@ -250,15 +272,26 @@
                             <textarea name="content" rows="3" required>{{ review.content }}</textarea>
                         </div>
                         <div class="form-row">
-                            <label>사진 파일 선택 (PC/사진첩)</label>
-                            <!-- capture 속성을 완전히 제거하여 카메라 직행 방지 -->
-                            <input type="file" name="images_{{ loop.index0 }}" accept="image/*" multiple onchange="previewImages(this, {{ loop.index0 }})">
+                            <label>등록된 사진 관리 (삭제할 사진에 체크 후 하단의 [전체 저장하기]를 누르세요)</label>
                             
                             <div class="preview-thumbs" id="preview_{{ loop.index0 }}">
+                                <!-- 💡 기존 등록된 사진 및 개별 삭제 체크박스 연동 -->
                                 {% for img in review.images %}
-                                <img src="{{ img }}" alt="등록된 사진">
+                                <div class="existing-img-box">
+                                    <img src="{{ img }}" alt="등록된 사진">
+                                    <label>
+                                        <input type="checkbox" name="delete_images_{{ loop.index0 }}" value="{{ img }}"> 삭제
+                                    </label>
+                                </div>
                                 {% endfor %}
                             </div>
+                        </div>
+
+                        <div class="form-row" style="margin-top: 15px;">
+                            <label>새 사진 추가하기 (PC/사진첩)</label>
+                            <!-- capture 속성을 완전히 제거하여 카메라 직행 방지 -->
+                            <input type="file" name="images_{{ loop.index0 }}" accept="image/*" multiple onchange="previewImages(this, {{ loop.index0 }})">
+                            <div class="preview-thumbs" id="new_preview_{{ loop.index0 }}"></div>
                         </div>
                     </div>
                     {% endfor %}
@@ -281,7 +314,7 @@
                         <div class="form-row">
                             <label>사진 파일 선택 (PC/사진첩)</label>
                             <input type="file" name="images_0" accept="image/*" multiple onchange="previewImages(this, 0)">
-                            <div class="preview-thumbs" id="preview_0"></div>
+                            <div class="preview-thumbs" id="new_preview_0"></div>
                         </div>
                     </div>
                 {% endif %}
@@ -326,7 +359,7 @@
                 <div class="form-row">
                     <label>사진 파일 선택 (PC/사진첩)</label>
                     <input type="file" name="images_${itemCount}" accept="image/*" multiple onchange="previewImages(this, ${itemCount})">
-                    <div class="preview-thumbs" id="preview_${itemCount}"></div>
+                    <div class="preview-thumbs" id="new_preview_${itemCount}"></div>
                 </div>
             `;
             container.appendChild(div);
@@ -335,13 +368,20 @@
 
         // 선택한 사진 미리보기 기능
         function previewImages(input, index) {
-            const previewContainer = document.getElementById(`preview_${index}`);
+            const previewContainer = document.getElementById(`new_preview_${index}`);
+            if (!previewContainer) return;
+            previewContainer.innerHTML = ""; // 기존 추가 미리보기 초기화
             if (input.files && input.files.length > 0) {
                 for (let i = 0; i < input.files.length; i++) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         const img = document.createElement('img');
                         img.src = e.target.result;
+                        img.style.width = "65px";
+                        img.style.height = "65px";
+                        img.style.objectFit = "cover";
+                        img.style.borderRadius = "4px";
+                        img.style.border = "1px solid #ddd";
                         previewContainer.appendChild(img);
                     }
                     reader.readAsDataURL(input.files[i]);

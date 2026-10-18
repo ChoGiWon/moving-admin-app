@@ -300,7 +300,7 @@ def admin_page():
     return render_template("admin.html", estimates=estimates)
 
 
-# 관리자 - 이사 후기 관리 페이지 라우트
+# 관리자 - 이사 후기 관리 페이지 라우트 (기존 사진 개별 삭제 로직 반영)
 @app.route("/admin/reviews", methods=["GET", "POST"])
 def admin_reviews():
     if not session.get("admin_logged_in"):
@@ -320,9 +320,24 @@ def admin_reviews():
             review_id = i + 1
             review_images = []
 
+            # 💡 기존 이미지가 있다면 유지하되, 체크된 이미지는 서버와 데이터에서 삭제
             if i < len(existing_reviews):
-                review_images = existing_reviews[i].get("images", [])
+                old_images = existing_reviews[i].get("images", [])
+                delete_target_images = request.form.getlist(f"delete_images_{i}")
+                
+                for img_url in old_images:
+                    if img_url in delete_target_images:
+                        try:
+                            relative_path = img_url.lstrip("/")
+                            file_path = os.path.join(app.root_path, relative_path)
+                            if os.path.exists(file_path):
+                                os.remove(file_path)
+                        except Exception as e:
+                            print("기존 사진 파일 삭제 에러:", e)
+                    else:
+                        review_images.append(img_url)
 
+            # 새로 업로드된 사진 처리 (멀티 파일)
             files = request.files.getlist(f"images_{i}")
             for file in files:
                 if file and file.filename != "":
@@ -351,7 +366,7 @@ def admin_reviews():
     return render_template("admin_reviews.html", reviews=reviews)
 
 
-# 💡 관리자 - 이사 후기 개별 수정 라우트 추가
+# 💡 관리자 - 이사 후기 개별 수정 라우트
 @app.route("/admin/reviews/edit/<int:rev_id>", methods=["GET", "POST"])
 def admin_reviews_edit(rev_id):
     if not session.get("admin_logged_in"):
@@ -375,7 +390,7 @@ def admin_reviews_edit(rev_id):
     return render_template("admin_review_edit.html", review=target_review)
 
 
-# 💡 관리자 - 이사 후기 개별 삭제 라우트 추가
+# 💡 관리자 - 이사 후기 개별 삭제 라우트
 @app.route("/admin/reviews/delete/<int:rev_id>", methods=["POST"])
 def admin_reviews_delete(rev_id):
     if not session.get("admin_logged_in"):
