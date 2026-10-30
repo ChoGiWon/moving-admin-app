@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}견적 문의 - 이삿짐센터{% endblock %}
+{% block content %}
+<h2>간편 견적 문의</h2>
+<form>
+    <p>
+        <label>출발지: <br><input type="text" name="from_loc" style="width:100%; padding:8px; margin-top:5px;"></label>
+    </p>
+    <p>
+        <label>도착지: <br><input type="text" name="to_loc" style="width:100%; padding:8px; margin-top:5px;"></label>
+    </p>
+    <p>
+        <label>이사 일자: <br><input type="date" name="move_date" style="width:100%; padding:8px; margin-top:5px;"></label>
+    </p>
+    <button type="submit" style="background:#2c3e50; color:white; border:none; padding:10px 20px; cursor:pointer; font-size:1em;">견적 신청하기</button>
+</form>
+{% endblock %}

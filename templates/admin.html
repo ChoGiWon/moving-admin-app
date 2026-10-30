@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <title>관리자 페이지 - 청년이사 프라임 익스프레스</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* 💡 갤럭시 탭 및 PC 화면에서 넓게 활용할 수 있도록 max-width를 1000px로 확장 */
+        .admin-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        .header-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+            margin: 0;
+        }
+
+        /* 세련된 동일 규격 우측 버튼 스타일 추가 */
+        .admin-nav-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .review-manage-btn,
+        .external-link-btn,
+        .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 135px;
+            padding: 8px 0;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .review-manage-btn {
+            background: #ff9800;
+            color: #ffffff;
+            border: 1px solid #e68900;
+            margin-right: 0;
+        }
+
+        .review-manage-btn:hover {
+            background: #e68900;
+        }
+
+        .external-link-btn {
+            background: #6f42c1;
+            color: #ffffff;
+            border: 1px solid #5a32a3;
+        }
+
+        .external-link-btn:hover {
+            background: #5a32a3;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: #ffffff;
+            border: 1px solid #c82333;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            padding: 12px;
+            width: 100%;
+            border: 2px solid #007bff;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .estimate-card {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* 폼 전체는 세로 스택 구조 */
+        .estimate-card form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* 가로 배치 row (고객 성함/연락처 행) */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1.5fr 2.5fr;
+            gap: 12px;
+        }
+
+        /* 날짜 행 (1차 이사일, 재입주일 종(세로) 정렬) */
+        .form-row.dates {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 0;
+        }
+
+        /* 출발지 / 도착지 구분선 및 뱃지 스타일 */
+        .address-divider {
+            border: none;
+            border-top: 2px dashed #007bff;
+            margin: 8px 0;
+            position: relative;
+        }
+
+        .address-divider::after {
+            content: "↓ 도착지";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fafafa;
+            padding: 0 10px;
+            font-size: 0.75rem;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        /* 글자 내용에 맞게 크기 자동 조절되는 textarea 스타일 */
+        textarea.auto-resize {
+            resize: none;
+            overflow: hidden;
+            line-height: 1.5;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #eef2f7;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #0056b3;
+        }
+
+        .checkbox-row input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .save-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .save-btn:hover {
+            background: #218838;
+        }
+
+        .meta-info {
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #777;
+            padding: 40px;
+            font-size: 1.1rem;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* 💡 스마트폰 화면(768px 이하) 패딩 최적화 미디어쿼리 */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .admin-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+            <a href="/" class="home-link" style="margin-bottom: 0; padding-top: 5px;">&lsaquo; 홈페이지로 돌아가기</a>
+
+            <!-- 동일한 너비와 정밀한 우측 끝맞춤 버튼 그룹 -->
+            <div class="admin-nav-btn-group">
+                <a href="/admin/reviews" class="review-manage-btn">📝 이사 후기 관리</a>
+                <!-- iloveimg 정확한 한국어 주소 연결 및 모바일 외부 브라우저 강제 오픈 스크립트 적용 -->
+                <a href="https://www.iloveimg.com/ko" target="_blank" rel="noopener noreferrer"
+                    class="external-link-btn" onclick="openExternalBrowser(event, 'https://www.iloveimg.com/ko')">
+                    🔗 iloveimg 열기
+                </a>
+                <a href="/admin/logout" class="logout-btn">🔒 로그아웃</a>
+            </div>
+        </div>
+
+        <div class="header-wrap">
+            <h2>📋 관리자</h2>
+        </div>
+
+        <!-- 통화 중 즉시 조회용 초고속 검색 바 (Quick Search) -->
+        <div class="search-box">
+            <input type="text" id="quickSearchInput" placeholder="🔍 전화 통화 중인 고객 이름 또는 전화번호 뒷자리 입력 (예: 5709, 홍길동)"
+                onkeyup="filterEstimates()">
+        </div>
+
+        {% if estimates %}
+        <div id="estimateListContainer">
+            {% for est in estimates %}
+            <div class="estimate-card" data-name="{{ est.userName }}" data-phone="{{ est.userPhone }}"
+                data-address="{{ est.userAddress }}">
+                <div class="meta-info">
+                    <span>번호: #{{ est.id }}</span>
+                    <span>일시: {{ est.created_at }}</span>
+                </div>
+                <form action="/admin/update/{{ est.id }}" method="POST">
+
+                    <!-- 고객 성함 & 연락처 행 (각각 세로 배치 및 라벨 옆 전화 버튼) -->
+                    <div class="form-row" style="display: flex; flex-direction: column; gap: 12px;">
+                        <div class="form-group">
+                            <label>고객 성함</label>
+                            <input type="text" name="userName" value="{{ est.userName }}" required>
+                        </div>
+                        <div class="form-group">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <label style="margin-bottom: 0;">연락처</label>
+                                <button type="button" onclick="callCustomer('{{ est.userPhone }}')"
+                                    style="background: #007bff; color: white; border: none; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                                    📞 전화
+                                </button>
+                            </div>
+                            <input type="text" name="userPhone" id="userPhone_{{ est.id }}" value="{{ est.userPhone }}"
+                                required>
+                        </div>
+                    </div>
+
+                    <!-- 주소: 출발지와 도착지 분리 및 구분선 적용 -->
+                    <div class="form-group">
+                        <label>주소 (출발지 / 도착지)</label>
+                        <div style="font-size: 0.75rem; color: #555; margin-bottom: 3px; font-weight: bold;">📍 출발지
+                        </div>
+                        <textarea name="departure" class="auto-resize" rows="1" placeholder="출발지 주소 입력"
+                            required>{{ est.departure }}</textarea>
+
+                        <hr class="address-divider">
+
+                        <div
+                            style="font-size: 0.75rem; color: #555; margin-bottom: 3px; margin-top: 3px; font-weight: bold;">
+                            📍 도착지</div>
+                        <textarea name="arrival" class="auto-resize" rows="1"
+                            placeholder="도착지 주소 입력 (선택)">{{ est.arrival }}</textarea>
+                    </div>
+
+                    <!-- 관리자 방문 견적일 필드 -->
+                    <div class="form-group">
+                        <label>관리자 방문 견적일 (선택)</label>
+                        <input type="date" name="visitDate" value="{{ est.visitDate }}">
+                    </div>
+
+                    <!-- 보관이사 체크박스 -->
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="isStorage_{{ est.id }}" name="isStorage" {% if est.isStorage
+                            %}checked{% endif %} onchange="toggleAdminStorage({{ est.id }})">
+                        <label for="isStorage_{{ est.id }}"
+                            style="cursor: pointer; margin: 0; color: #0056b3;">보관이사</label>
+                    </div>
+
+                    <!-- 날짜 행 (1차 이사일, 재입주일 종(세로) 정렬) -->
+                    <div class="form-row dates" id="dateRow_{{ est.id }}">
+                        <div class="form-group">
+                            <label id="dateLabel1_{{ est.id }}">{% if est.isStorage %}1차 이사 날짜 (짐 빼는 날){% else %}원하는 이사
+                                날짜{% endif %}</label>
+                            <input type="date" name="moveDate1" value="{{ est.moveDate1 }}" required>
+                        </div>
+
+                        <div class="form-group" id="storageWrap_{{ est.id }}"
+                            style="{% if est.isStorage %}display: flex;{% else %}display: none;{% endif %}">
+                            <label>재입주 날짜 (짐 들어가는 날)</label>
+                            <input type="date" name="moveDate2" id="moveDate2_{{ est.id }}" value="{{ est.moveDate2 }}">
+                        </div>
+                    </div>
+
+                    <!-- 특이사항 메모 (글자 내용에 맞는 크기 자동 조절) -->
+                    <div class="form-group">
+                        <label>특이사항 메모 (관리자 전용)</label>
+                        <textarea name="memo" class="auto-resize" rows="2"
+                            placeholder="고객 요청사항이나 통화 내용 등 특이사항을 입력하세요.">{{ est.memo }}</textarea>
+                    </div>
+
+                    <button type="submit" class="save-btn">수정 사항 및 메모 저장</button>
+
+                    <!-- 문자/카톡용 복사 버튼 (visitDate 속성 추가) -->
+                    <button type="button" class="btn-copy-msg" data-name="{{ est.userName }}"
+                        data-phone="{{ est.userPhone }}" data-address="{{ est.userAddress }}"
+                        data-date1="{{ est.moveDate1 }}" data-visitdate="{{ est.visitDate }}"
+                        data-isstorage="{{ '보관이사 (재입주일: ' ~ est.moveDate2 ~ ')' if est.isStorage else '일반이사' }}"
+                        data-memo="{{ est.memo }}" onclick="copyEstimateMessage(this)"
+                        style="background: #28a745; color: white; border: none; padding: 10px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold;">
+                        📋 문자/카톡용 복사
+                    </button>
+                </form>
+
+                <!-- 관리자 비밀번호 확인 삭제 영역 (세로 배치 및 버튼 풀사이즈 정렬로 수정) -->
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;"
+                    id="delete-box-{{ est.id }}">
+                    <input type="password" id="delete_password_{{ est.id }}" placeholder="관리자 비밀번호 입력" required
+                        style="padding: 10px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 4px; width: 100%; box-sizing: border-box;">
+                    <button type="button" onclick="deleteEstimate({{ est.id }})"
+                        style="background: #dc3545; color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; width: 100%; box-sizing: border-box;">
+                        🗑️ 내역 삭제
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-data">아직 접수된 견적 요청이 없습니다.</div>
+        {% endif %}
+    </div>
+
+    <script>
+        // 모바일 환경에서 인앱 웹뷰 대신 기본 브라우저 앱(크롬/사파리)으로 열리도록 유도하는 함수
+        function openExternalBrowser(event, url) {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            if (/android/i.test(userAgent)) {
+                event.preventDefault();
+                const cleanUrl = url.replace('https://', '').replace('http://', '');
+                window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end;`;
+            }
+        }
+
+        // 오늘 이전 날짜 선택 방지
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                input.setAttribute('min', today);
+            });
+        });
+
+        // 텍스트 영역 높이를 내용에 맞게 자동 조절하는 함수
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('textarea.auto-resize').forEach(textarea => {
+                autoResizeTextarea(textarea);
+                textarea.addEventListener('input', () => autoResizeTextarea(textarea));
+            });
+        });
+
+        // 통화 중 고객 빠른 검색 필터링 함수
+        function filterEstimates() {
+            const query = document.getElementById('quickSearchInput').value.trim().toLowerCase();
+            const cards = document.querySelectorAll('.estimate-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                const phone = card.getAttribute('data-phone').toLowerCase();
+                const address = card.getAttribute('data-address').toLowerCase();
+
+                if (name.includes(query) || phone.includes(query) || address.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleAdminStorage(id) {
+            const checkbox = document.getElementById('isStorage_' + id);
+            const storageWrap = document.getElementById('storageWrap_' + id);
+            const dateLabel1 = document.getElementById('dateLabel1_' + id);
+            const moveDate2 = document.getElementById('moveDate2_' + id);
+
+            if (checkbox.checked) {
+                storageWrap.style.display = 'flex';
+                dateLabel1.innerText = '1차 이사 날짜 (짐 빼는 날)';
+                moveDate2.setAttribute('required', 'required');
+            } else {
+                storageWrap.style.display = 'none';
+                dateLabel1.innerText = '원하는 이사 날짜';
+                moveDate2.removeAttribute('required');
+                moveDate2.value = '';
+            }
+        }
+
+        function copyEstimateMessage(button) {
+            const name = button.getAttribute('data-name');
+            const phone = button.getAttribute('data-phone');
+            const rawAddress = button.getAttribute('data-address');
+            const date1 = button.getAttribute('data-date1');
+            const visitDate = button.getAttribute('data-visitdate');
+            const storage = button.getAttribute('data-isstorage');
+            const memo = button.getAttribute('data-memo');
+
+            let formattedAddress = rawAddress;
+            if (rawAddress.includes(" / ")) {
+                const parts = rawAddress.split(" / ");
+                formattedAddress = `출발지: ${parts[0]}\n도착지: ${parts[1]}`;
+            } else if (rawAddress.includes("/")) {
+                const parts = rawAddress.split("/");
+                formattedAddress = `출발지: ${parts[0].trim()}\n도착지: ${parts[1].trim()}`;
+            }
+
+            const visitDateLine = visitDate ? `■ 방문 견적일: ${visitDate}\n` : '';
+
+            const message = `[청년이사 프라임 익스프레스] 견적 내용 확인\n\n` +
+                `■ 고객 성함: ${name} 고객님\n` +
+                `■ 연락처: ${phone}\n` +
+                `■ 주소:\n${formattedAddress}\n` +
+                visitDateLine +
+                `■ 이사일: ${date1}\n` +
+                `■ 구분: ${storage}\n` +
+                (memo ? `■ 참고 메모: ${memo}\n` : '') +
+                `\n안전하고 친절한 이사를 약속드립니다. 감사합니다!`;
+
+            navigator.clipboard.writeText(message).then(() => {
+                alert('견적 내용이 클립보드에 복사되었습니다!\n문자나 카톡창에 붙여넣기 하세요.');
+            }).catch(err => {
+                console.error('클립보드 복사 실패:', err);
+                alert('복사에 실패했습니다.');
+            });
+        }
+
+        function callCustomer(phoneNumber) {
+            if (!phoneNumber) {
+                alert('전화번호 정보가 없습니다.');
+                return;
+            }
+            const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+            window.location.href = `tel:${cleanNumber}`;
+        }
+
+        let isDeleting = false;
+
+        function deleteEstimate(estId) {
+            if (isDeleting) return;
+
+            const passwordInput = document.getElementById('delete_password_' + estId);
+            const password = passwordInput.value;
+
+            if (!password) {
+                alert('비밀번호를 입력해주세요.');
+                passwordInput.focus();
+                return;
+            }
+
+            if (!confirm('정말 이 견적 내역을 삭제하시겠습니까?')) {
+                return;
+            }
+
+            isDeleting = true;
+
+            fetch('/admin/delete/' + estId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ delete_password: password })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    isDeleting = false;
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        } else {
+                            alert(data.message || '삭제에 실패했습니다.');
+                        }
+                    }
+                })
+                .catch(err => {
+                    isDeleting = false;
+                    console.error('삭제 요청 에러:', err);
+                    alert('서버 통신 중 오류가 발생했습니다.');
+                });
+        }
+    </script>
+
+    <!-- Firebase SDK CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFHnunxUTOV38tcsVWjTxrsMQ8JLNW6BA",
+            projectId: "moving-admin-push",
+            messagingSenderId: "969733949330",
+            appId: "1:969733949330:web:31960e4db0a0225b47a34b"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        let deviceId = localStorage.getItem("admin_device_uuid");
+        if (!deviceId) {
+            deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now();
+            localStorage.setItem("admin_device_uuid", deviceId);
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then((registration) => {
+                    console.log('서비스 워커 등록 성공:', registration);
+
+                    Notification.requestPermission().then((permission) => {
+                        if (permission === 'granted') {
+                            console.log('알림 권한이 허용되었습니다.');
+
+                            messaging.getToken({ vapidKey: 'BOwFwvEz6Uck5wOtsI4QzkT_Yv3RTp7gBgNYAQBsLLprc0E1_KfbgkqfFSy3iSNID9tymLCMBwwiBKdlAqcwTLw' })
+                                .then((currentToken) => {
+                                    if (currentToken) {
+                                        console.log('FCM 토큰 발급 성공:', currentToken);
+
+                                        fetch('/admin/save-token', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                token: currentToken,
+                                                device_id: deviceId
+                                            })
+                                        })
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                console.log('서버 토큰 저장 완료:', data);
+                                            })
+                                            .catch(err => {
+                                                console.error('서버 토큰 저장 실패:', err);
+                                            });
+                                    } else {
+                                        console.log('등록 토큰을 가져올 수 없습니다.');
+                                    }
+                                })
+                                .catch((err) => {
+                                    console.error('토큰 발급 중 에러 발생:', err);
+                                });
+                        } else {
+                            console.log('알림 권한이 거부되었습니다.');
+                        }
+                    });
+                })
+                .catch((err) => {
+                    console.error('서비스 워커 등록 실패:', err);
+                });
+        }
+    </script>
+</body>
+
+</html>

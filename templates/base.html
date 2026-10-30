@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}청년이사 프라임 익스프레스{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
+    <style>
+        /* 💡 태블릿 및 PC 화면에서 넓은 화면 공간을 활용할 수 있도록 컨테이너 폭 확장 및 반응형 최적화 */
+        .mobile-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-container {
+                max-width: 100%;
+            }
+        }
+
+        /* 우측 하단 고정 플로팅 버튼 스타일 */
+        .floating-buttons {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-float {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, background-color 0.2s, opacity 0.3s, visibility 0.3s;
+            border: none;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .btn-float:hover {
+            transform: scale(1.08);
+        }
+
+        /* 전화 상담 버튼 (초록색 원형) */
+        .call-btn {
+            background-color: #FBC117;
+            color: white;
+        }
+
+        /* 맨 위로 가기 버튼 (반투명 검정 배경, 큰 화살표) */
+        .scroll-top-btn {
+            background-color: rgba(0, 0, 0, 0.45);
+            /* 반투명한 연한 검정 배경 */
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 1.6rem;
+            /* 화살표 크기 확대 */
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .scroll-top-btn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 공통 메인 컨테이너 -->
+    <div class="mobile-container">
+
+        <div class="top-banner"
+            style="display: flex; justify-content: space-between; align-items: center; padding: 6px 15px; background-color: #fce8e6;">
+            <!-- 💡 초록색 점 위치 (분홍색 상단 바 좌측 끝에 버전 표시) -->
+            <span style="font-size: 11px; color: #888; font-family: monospace; font-weight: bold;">v1.0.22</span>
+            
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <a href="https://blog.naver.com/rmfja179"
+                    style="color: #d93025; font-weight: bold; text-decoration: none; font-size: 0.85rem;">
+                    📝 공식 블로그
+                </a>
+                <a href="#partner-recruit"
+                    style="color: #d93025; font-weight: bold; text-decoration: none; font-size: 0.85rem;">
+                    🤝 파트너 모집
+                </a>
+                <a href="#partner-intro"
+                    style="color: #1a73e8; font-weight: bold; text-decoration: none; font-size: 0.85rem;">
+                    🏢 협력사 소개
+                </a>
+            </div>
+        </div>
+        <!-- 2. 회사 로고 -->
+        <header class="header-area">
+            <div class="logo">
+                <a href="/" class="logo-link">
+                    <img src="{{ url_for('static', filename='logo-main.png') }}" alt="로고" class="logo-img">
+                    <span class="logo-text">청년이사 프라임 익스프레스</span>
+                </a>
+            </div>
+            <!-- 3. 햄버거 네비 버튼 -->
+            <div class="navi">
+                <button class="menu-open-btn" onclick="toggleMenu()">
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 4. 페이지 이동메뉴 (모든 페이지 상단에 항상 고정 노출) -->
+        <nav class="main-nav">
+            <a href="/">홈</a>
+            <a href="/#estimate-section">견적</a>
+            <a href="/#reviews-section">접수현황</a>
+            <a href="/#calendar-section">달력</a>
+            <a href="/#certificate-section">증명서</a>
+        </nav>
+
+        <!-- 각 페이지별 콘텐츠가 들어가는 자리 -->
+        {% block content %}{% endblock %}
+
+    </div>
+
+    <!-- 전체 서비스 메뉴 오버레이 (햄버거 버튼 클릭 시 오픈) -->
+    <div id="fullMenuModal" class="full-menu-overlay">
+        <div class="full-menu-content">
+            <!-- 상단 제목 및 닫기 버튼 -->
+            <div class="full-menu-header">
+                <h2>전체 서비스</h2>
+                <button class="menu-close-btn" onclick="toggleMenu()">&times;</button>
+            </div>
+
+            <!-- 메뉴 항목들 -->
+            <div class="service-category">
+                <h3>이사</h3>
+                <div class="service-grid">
+                    <a href="/#estimate-section" class="service-card" onclick="toggleMenu()">
+                        <div class="service-title">견적</div>
+                        <div class="service-desc">견적 요청 안내</div>
+                        <span class="arrow">&gt;</span>
+                    </a>
+                    <a href="/#reviews-section" class="service-card" onclick="toggleMenu()">
+                        <div class="service-title">접수현황</div>
+                        <div class="service-desc"></div>
+                        <span class="arrow">&gt;</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="service-category">
+                <h3>달력 및 증명서 확인</h3>
+                <div class="service-grid">
+                    <a href="/#calendar-section" class="service-card" onclick="toggleMenu()">
+                        <div class="service-title">이사 달력</div>
+                        <div class="service-desc">손없는 날</div>
+                        <span class="arrow">&gt;</span>
+                    </a>
+                    <a href="/#certificate-section" class="service-card" onclick="toggleMenu()">
+                        <div class="service-title">가입 증명서</div>
+                        <div class="service-desc">보험가입 · 여성기업 확인서</div>
+                        <span class="arrow">&gt;</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메뉴 동작 및 스크롤 이벤트 자바스크립트 -->
+    <script>
+        function toggleMenu() {
+            const modal = document.getElementById('fullMenuModal');
+            modal.classList.toggle('active');
+        }
+
+        // 일정 길이(300px) 이상 스크롤 시 맨 위로 버튼 표시
+        window.addEventListener('scroll', function () {
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('show');
+            } else {
+                scrollTopBtn.classList.remove('show');
+            }
+        });
+
+        // 부드럽게 화면 최상단으로 이동하는 함수
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+
+    <!-- 우측 하단 고정 전화 버튼 및 반투명 배경 ^ 맨 위로 가기 버튼 -->
+    <div class="floating-buttons">
+        <a href="tel:010-9135-5709" class="btn-float call-btn" title="전화 상담">📞</a>
+        <button id="scrollTopBtn" class="btn-float scroll-top-btn" onclick="scrollToTop()" title="맨 위로">^</button>
+    </div>
+
+</body>
+
+</html>
