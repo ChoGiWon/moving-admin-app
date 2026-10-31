@@ -218,8 +218,20 @@ def submit_estimate():
     print("========================================")
     print("🚀 /estimate 라우트(견적 접수) 진입 성공!")
     print("========================================")
+
     user_name = request.form.get("userName")
     user_phone = request.form.get("userPhone")
+
+    # 💡 1. 필수 입력값 검증: 이름이나 연락처가 비어있거나 None인 경우 접수 원천 차단
+    if (
+        not user_name
+        or not user_phone
+        or str(user_name).strip() == ""
+        or str(user_phone).strip() == ""
+    ):
+        print("🚨 [견적 접수 거부] 필수 입력값(이름 또는 연락처)이 누락되었습니다.")
+        return redirect(url_for("home"))
+
     departure = request.form.get("departure", "").strip()
     arrival = request.form.get("arrival", "").strip()
 
@@ -231,12 +243,18 @@ def submit_estimate():
 
     is_storage = request.form.get("isStorageMove") == "on"
     move_date1 = request.form.get("moveDate1")
+
+    # 이사 날짜도 비어있는지 추가 방어 코드
+    if not move_date1:
+        print("🚨 [견적 접수 거부] 이사 날짜가 누락되었습니다.")
+        return redirect(url_for("home"))
+
     move_date2 = request.form.get("moveDate2", "") if is_storage else ""
     visit_date = request.form.get("visitDate", "").strip()
 
     estimate_data = {
-        "userName": user_name,
-        "userPhone": user_phone,
+        "userName": user_name.strip(),
+        "userPhone": user_phone.strip(),
         "userAddress": user_address,
         "isStorage": is_storage,
         "moveDate1": move_date1,
